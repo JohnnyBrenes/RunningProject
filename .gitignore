@@ -1,0 +1,12 @@
+Backend/RunningWebApi/obj/project.assets.json
+Backend/RunningWebApi/obj/Debug/net8.0/src.GeneratedMSBuildEditorConfig.editorconfig
+Backend/RunningWebApi/obj/Debug/net8.0/src.assets.cache
+Backend/RunningWebApi/obj/Debug/net8.0/src.AssemblyInfoInputs.cache
+Backend/RunningWebApi/obj/src.csproj.nuget.dgspec.json
+
+[Dd]ebug/
+[Oo]bj/
+[Bb]in/
+
+
+Backend/RunningWebApi/appsettings.Development.json
