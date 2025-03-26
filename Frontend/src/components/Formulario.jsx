@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const Formulario = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const Formulario = () => {
   });
   const [averagePace, setAveragePace] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,14 +40,33 @@ const Formulario = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    try {
+      const response = await axios.post('http://localhost:5291/api/trainnings', formData);
+      console.log('Data submitted successfully:', response.data);
+      setSuccessMessage('Datos registrados exitosamente');
+      setFormData({
+        date: '',
+        kilometers: '',
+        time: '',
+        shoes: '',
+      });
+      setAveragePace('');
+      setDayOfWeek('');
+    } catch (error) {
+      console.error('Error enviando información:', error);
+    }
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-5 rounded-md shadow-md">
       <h2 className="text-2xl font-bold text-center mb-5">Ingresar Datos</h2>
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 border border-green-400 rounded">
+          {successMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="date" className="block text-sm font-medium text-gray-700">Fecha</label>

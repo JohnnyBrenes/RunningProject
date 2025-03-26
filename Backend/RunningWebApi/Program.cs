@@ -13,6 +13,18 @@ builder.Services.AddSwaggerGen();
 // Register SupabaseService
 builder.Services.AddSingleton<SupabaseService>();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
+});
+
 // Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -24,9 +36,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 

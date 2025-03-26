@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useState, useEffect } from 'react';
+import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
+import axios from 'axios';
 
 // Registrar todos los elementos de Chart.js
 ChartJS.register(...registerables);
@@ -8,49 +9,97 @@ ChartJS.register(...registerables);
 const Charts = () => {
   const [chartType, setChartType] = useState('kms'); // Controla el tipo de gráfica
   const [period, setPeriod] = useState('mes'); // Controla el periodo de comparación
+  const [data, setData] = useState([]); // Datos obtenidos del backend
 
-  // Datos de Ejemplo
-  const dataKms = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
-    datasets: [
-      {
-        label: 'Kilómetros recorridos',
-        data: [10, 20, 30, 40, 50],
-        fill: 'origin',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        tension: 0.1,
-      },
-    ],
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5291/api/trainnings');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Filtrar los datos según el periodo seleccionado
+  const filterDataByPeriod = (data, period) => {
+    const now = new Date();
+    let filteredData = [];
+
+    if (period === 'mes') {
+      const currentMonth = now.getMonth();
+      filteredData = data.filter(item => new Date(item.date).getMonth() === currentMonth);
+    } else if (period === 'trimestre') {
+      const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+      filteredData = data.filter(item => new Date(item.date) >= threeMonthsAgo);
+    } else if (period === 'semestre') {
+      const sixMonthsAgo = new Date(now.setMonth(now.getMonth() - 6));
+      filteredData = data.filter(item => new Date(item.date) >= sixMonthsAgo);
+    } else if (period === 'año') {
+      const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
+      filteredData = data.filter(item => new Date(item.date) >= oneYearAgo);
+    }
+
+    return filteredData;
   };
 
-  const dataVelocities = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
-    datasets: [
-      {
-        label: 'Velocidades promedio',
-        data: [8, 9, 10, 11, 12],
-        fill: 'origin',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        tension: 0.1,
-      },
-    ],
+  // Obtener los datos filtrados
+  const filteredData = filterDataByPeriod(data, period);
+
+  // Agrupar los datos por mes
+  const groupDataByMonth = (data, period) => {
+    const now = new Date();
+    let months = [];
+
+    if (period === 'mes') {
+      months = [now.toLocaleString('default', { month: 'long' })];
+    } else if (period === 'trimestre') {
+      for (let i = 0; i < 3; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    } else if (period === 'semestre') {
+      for (let i = 0; i < 6; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    } else if (period === 'año') {
+      for (let i = 0; i < 12; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    }
+
+    const groupedData = data.reduce((acc, item) => {
+      const month = new Date(item.date).toLocaleString('default', { month: 'long' });
+      if (!acc[month]) {
+        acc[month] = 0;
+      }
+      acc[month] += item.kilometers;
+      return acc;
+    }, {});
+
+    const dataWithAllMonths = months.reduce((acc, month) => {
+      acc[month] = groupedData[month] || 0;
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(dataWithAllMonths).reverse(),
+      datasets: [
+        {
+          label: 'Kilómetros recorridos',
+          data: Object.values(dataWithAllMonths).reverse(),
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
   };
 
-  const dataTenis = {
-    labels: ['Tenis A', 'Tenis B', 'Tenis C'],
-    datasets: [
-      {
-        label: 'Kilómetros recorridos por tenis',
-        data: [100, 200, 150],
-        fill: 'origin',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        borderColor: 'rgba(153, 102, 255, 1)',
-        tension: 0.1,
-      },
-    ],
-  };
+  // Preparar los datos para la gráfica de kilómetros
+  const dataKms = groupDataByMonth(filteredData, period);
 
   const options = {
     responsive: true,
@@ -60,14 +109,6 @@ const Charts = () => {
       },
     },
   };
-
-  // Seleccionar los datos según el tipo de gráfica
-  const chartData =
-    chartType === 'kms'
-      ? dataKms
-      : chartType === 'velocities'
-      ? dataVelocities
-      : dataTenis;
 
   return (
     <div>
@@ -104,7 +145,7 @@ const Charts = () => {
         </select>
       </div>
 
-      <Line data={chartData} options={options} />
+      <Bar data={dataKms} options={options} />
     </div>
   );
 };
