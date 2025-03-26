@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "Backend/RunningWebApi/Program.cs",
+        "use": "@vercel/dotnet"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "Backend/RunningWebApi/out/RunningWebApi.dll"
+      }
+    ]
+  }
