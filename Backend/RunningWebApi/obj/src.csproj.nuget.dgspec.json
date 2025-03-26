@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/johnnybrenes/Projects/RunningTracker/Backend/RunningWebApi/src.csproj": {}
+    "/Users/johnnybrenes/Projects/RunningProject/RunningProject/Backend/RunningWebApi/src.csproj": {}
   },
   "projects": {
-    "/Users/johnnybrenes/Projects/RunningTracker/Backend/RunningWebApi/src.csproj": {
+    "/Users/johnnybrenes/Projects/RunningProject/RunningProject/Backend/RunningWebApi/src.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/johnnybrenes/Projects/RunningTracker/Backend/RunningWebApi/src.csproj",
+        "projectUniqueName": "/Users/johnnybrenes/Projects/RunningProject/RunningProject/Backend/RunningWebApi/src.csproj",
         "projectName": "src",
-        "projectPath": "/Users/johnnybrenes/Projects/RunningTracker/Backend/RunningWebApi/src.csproj",
+        "projectPath": "/Users/johnnybrenes/Projects/RunningProject/RunningProject/Backend/RunningWebApi/src.csproj",
         "packagesPath": "/Users/johnnybrenes/.nuget/packages/",
-        "outputPath": "/Users/johnnybrenes/Projects/RunningTracker/Backend/RunningWebApi/obj/",
+        "outputPath": "/Users/johnnybrenes/Projects/RunningProject/RunningProject/Backend/RunningWebApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/johnnybrenes/.nuget/NuGet/NuGet.Config"
@@ -33,6 +33,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
