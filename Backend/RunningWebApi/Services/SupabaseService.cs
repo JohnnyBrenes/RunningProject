@@ -13,7 +13,15 @@ public class SupabaseService
 
     public SupabaseService(IConfiguration config, ILogger<SupabaseService> logger)
     {
-        _client = new Supabase.Client(config["Supabase:Url"]!, config["Supabase:AnonKey"])!;
+        var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
+        var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+
+        if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(key))
+        {
+            throw new InvalidOperationException("Supabase URL and Key must be provided.");
+        }
+
+        _client = new Supabase.Client(url, key);
         _logger = logger;
     }
 
