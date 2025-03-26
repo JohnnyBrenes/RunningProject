@@ -7,3 +7,6 @@ Backend/RunningWebApi/obj/src.csproj.nuget.dgspec.json
 [Dd]ebug/
 [Oo]bj/
 [Bb]in/
+
+
+Backend/RunningWebApi/appsettings.Development.json
