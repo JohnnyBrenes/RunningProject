@@ -2,8 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copia los archivos del proyecto al contenedor
-COPY . ./
+# Copia solo los archivos del backend al contenedor
+COPY Backend/RunningWebApi/ ./
 
 # Restaura las dependencias y publica la aplicación en modo Release
 RUN dotnet restore
@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=build /out .
 
 # Copia el archivo .env al contenedor
-COPY .env .env
+COPY Backend/RunningWebApi/.env .env
 
 # Expone el puerto en el que la aplicación escucha (por defecto 80)
 EXPOSE 80
