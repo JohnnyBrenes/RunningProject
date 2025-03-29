@@ -9,7 +9,7 @@ const VerData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5291/api/trainnings');
+        const response = await axios.get('running-backend.koyeb.app/api/trainnings');
         setDatos(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
