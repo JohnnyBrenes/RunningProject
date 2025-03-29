@@ -43,7 +43,7 @@ const Formulario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('running-backend.koyeb.app/api/trainnings', formData);
+      const response = await axios.post('https://running-backend.koyeb.app/api/trainnings', formData);
       console.log('Data submitted successfully:', response.data);
       setSuccessMessage('Datos registrados exitosamente');
       setFormData({
