@@ -32,13 +32,19 @@ builder.Services.AddCors(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80); // Puerto 80 para Docker
+});
+
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
 
