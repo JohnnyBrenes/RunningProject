@@ -7,14 +7,6 @@ Este proyecto es una aplicación para gestionar y visualizar datos relacionados 
 - [Características](#características)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Instalación](#instalación)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-- [Uso](#uso)
-- [Endpoints del Backend](#endpoints-del-backend)
-- [Capturas de Pantalla](#capturas-de-pantalla)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
 
 ---
 
