@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import Api from '../utils/Api';
 
 const Formulario = () => {
   const [formData, setFormData] = useState({
     date: '',
     kilometers: '',
     time: '',
+    pace: '',
     shoes: '',
   });
-  const [averagePace, setAveragePace] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -22,7 +22,7 @@ const Formulario = () => {
 
     if (name === 'date') {
       const date = new Date(value);
-      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
       setDayOfWeek(days[date.getDay()]);
     }
   };
@@ -34,25 +34,33 @@ const Formulario = () => {
       const paceSeconds = totalSeconds / parseFloat(kilometers);
       const paceMinutes = Math.floor(paceSeconds / 60);
       const paceRemainderSeconds = Math.round(paceSeconds % 60);
-      setAveragePace(`${paceMinutes}:${paceRemainderSeconds.toString().padStart(2, '0')} min/km`);
+      const calculatedPace = `${paceMinutes}:${paceRemainderSeconds.toString().padStart(2, '0')}`;
+
+      // Actualizar el campo "pace" en formData
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        pace: calculatedPace, // Solo almacena el valor en formato mm:ss
+      }));
     } else {
-      setAveragePace('');
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        pace: '',
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://running-backend.koyeb.app/api/trainnings', formData);
-      console.log('Data submitted successfully:', response.data);
+      const response = await Api.post('/api/trainnings', formData);
       setSuccessMessage('Datos registrados exitosamente');
       setFormData({
         date: '',
         kilometers: '',
         time: '',
+        pace: '',
         shoes: '',
       });
-      setAveragePace('');
       setDayOfWeek('');
     } catch (error) {
       console.error('Error enviando información:', error);
@@ -108,10 +116,12 @@ const Formulario = () => {
             placeholder="Ej. 50:03"
           />
         </div>
-        {averagePace && (
+        {formData.pace && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Ritmo promedio</label>
-            <p className="mt-1 p-3 w-full border border-gray-300 rounded-md bg-gray-100">{averagePace}</p>
+            <p className="mt-1 p-3 w-full border border-gray-300 rounded-md bg-gray-100">
+              {formData.pace} <span className="text-gray-500">min/km</span>
+            </p>
           </div>
         )}
         <div className="mb-4">

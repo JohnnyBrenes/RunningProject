@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import Api from '../utils/Api';
 
 const VerData = () => {
   const [filtroMes, setFiltroMes] = useState('');
   const [filtroTenis, setFiltroTenis] = useState('');
   const [datos, setDatos] = useState([]);
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' o 'desc'
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const recordsPerPage = 15; // Registros por página
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://running-backend.koyeb.app/api/trainnings');
+        const response = await Api.get('/api/trainnings');
         setDatos(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -19,113 +23,182 @@ const VerData = () => {
     fetchData();
   }, []);
 
-  // Extraemos el mes de la fecha para facilitar la comparación
-  const getMonthFromDate = (date) => new Date(date).toLocaleString('default', { month: 'long' });
-
-  // Filtramos los datos basados en los filtros
-  const filteredData = datos.filter(item => {
-    return (
-      (filtroMes ? getMonthFromDate(item.date).toLowerCase().includes(filtroMes.toLowerCase()) : true) &&
-      (filtroTenis ? item.shoes.toLowerCase().includes(filtroTenis.toLowerCase()) : true)
-    );
-  });
-
-  // Lista de meses para el filtro
+  // Lista de meses en español
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  // Opciones de tenis para el filtro
-  const tenisOptions = ['Nike', 'Adidas'];
+  // Extraemos el mes de la fecha basado en índices
+  const getMonthFromDate = (date) => {
+    const monthIndex = new Date(date).getMonth();
+    return meses[monthIndex];
+  };
 
   // Formatear la fecha en dd/mm/yyyy
   const formatDate = (date) => {
     const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0'); // Asegurar dos dígitos para el día
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Asegurar dos dígitos para el mes
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
-  // Calcular el ritmo promedio (pace)
-  const calculatePace = (time, kilometers) => {
-    const [minutes, seconds] = time.split(':').map(Number);
-    const totalSeconds = minutes * 60 + seconds;
-    const paceSeconds = totalSeconds / parseFloat(kilometers);
-    const paceMinutes = Math.floor(paceSeconds / 60);
-    const paceRemainderSeconds = Math.round(paceSeconds % 60);
-    return `${paceMinutes}:${paceRemainderSeconds.toString().padStart(2, '0')} min/km`;
+  // Filtramos los datos basados en los filtros
+  const filteredData = datos.filter(item => {
+    return (
+      (filtroMes ? getMonthFromDate(item.date).toLowerCase() === filtroMes.toLowerCase() : true) &&
+      (filtroTenis ? item.shoes.toLowerCase().includes(filtroTenis.toLowerCase()) : true)
+    );
+  });
+
+  // Ordenar los datos según la columna seleccionada
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortColumn) return 0; // Si no hay columna seleccionada, no ordenar
+    const valueA = a[sortColumn];
+    const valueB = b[sortColumn];
+
+    if (typeof valueA === 'string') {
+      return sortOrder === 'asc'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    } else if (typeof valueA === 'number') {
+      return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+    }
+    return 0;
+  });
+
+  // Calcular los datos de la página actual
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentData = sortedData.slice(indexOfFirstRecord, indexOfLastRecord);
+
+  // Calcular el número total de páginas
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
+
+  // Manejar el cambio de página
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
     <div className="p-5">
       <h2 className="text-2xl mb-4">Ver Datos</h2>
 
-      {/* Filtro por mes */}
-      <div className="mb-4">
-        <label className="mr-2">Filtrar por mes:</label>
-        <select
-          value={filtroMes}
-          onChange={e => setFiltroMes(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Todos los meses</option>
-          {meses.map(mes => (
-            <option key={mes} value={mes}>
-              {mes}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        <div>
+          <div className="mb-4">
+            <label className="mr-2">Filtrar por mes:</label>
+            <select
+              value={filtroMes}
+              onChange={e => setFiltroMes(e.target.value)}
+              className="p-2 border rounded"
+            >
+              <option value="">Todos los meses</option>
+              {meses.map(mes => (
+                <option key={mes} value={mes}>
+                  {mes}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {/* Filtro por tenis */}
-      <div className="mb-4">
-        <label className="mr-2">Filtrar por tenis:</label>
-        <select
-          value={filtroTenis}
-          onChange={e => setFiltroTenis(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Todos los tenis</option>
-          {tenisOptions.map(tenis => (
-            <option key={tenis} value={tenis}>
-              {tenis}
-            </option>
-          ))}
-        </select>
+          <div className="mb-4">
+            <label className="mr-2">Filtrar por tenis:</label>
+            <select
+              value={filtroTenis}
+              onChange={e => setFiltroTenis(e.target.value)}
+              className="p-2 border rounded"
+            >
+              <option value="">Todos los tenis</option>
+              {[...new Set(datos.map(item => item.shoes))].map(tenis => (
+                <option key={tenis} value={tenis}>
+                  {tenis}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Tabla de datos filtrados */}
-      <div className="overflow-hidden rounded-lg shadow-lg">
+      <div className="overflow-x-auto rounded-lg shadow-lg">
         <table className="table-auto w-full">
           <thead className="bg-blue-900 text-white">
             <tr>
-              <th className="border p-2">Fecha</th>
-              <th className="border p-2">Kilómetros</th>
-              <th className="border p-2">Tiempo</th>
-              <th className="border p-2">Ritmo Promedio</th>
-              <th className="border p-2">Tenis</th>
+              <th
+                className={`border p-2 cursor-pointer ${sortColumn === 'date' ? 'bg-blue-700' : ''}`}
+                onClick={() => setSortColumn('date')}
+              >
+                Fecha
+              </th>
+              <th
+                className={`border p-2 cursor-pointer ${sortColumn === 'kilometers' ? 'bg-blue-700' : ''}`}
+                onClick={() => setSortColumn('kilometers')}
+              >
+                Kilómetros
+              </th>
+              <th
+                className={`border p-2 cursor-pointer ${sortColumn === 'time' ? 'bg-blue-700' : ''}`}
+                onClick={() => setSortColumn('time')}
+              >
+                Tiempo
+              </th>
+              <th
+                className={`border p-2 cursor-pointer ${sortColumn === 'pace' ? 'bg-blue-700' : ''}`}
+                onClick={() => setSortColumn('pace')}
+              >
+                Ritmo Promedio
+              </th>
+              <th
+                className={`border p-2 cursor-pointer ${sortColumn === 'shoes' ? 'bg-blue-700' : ''}`}
+                onClick={() => setSortColumn('shoes')}
+              >
+                Tenis
+              </th>
+              <th className="border p-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item, index) => (
+            {currentData.length > 0 ? (
+              currentData.map((item, index) => (
                 <tr key={item.id} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
                   <td className="border p-2">{formatDate(item.date)}</td>
                   <td className="border p-2">{item.kilometers}</td>
                   <td className="border p-2">{item.time}</td>
-                  <td className="border p-2">{calculatePace(item.time, item.kilometers)}</td>
+                  <td className="border p-2">{item.pace}</td>
                   <td className="border p-2">{item.shoes}</td>
+                  <td className="border p-2 text-center">
+                    <button
+                      onClick={() => console.log('Eliminar', item.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Borrar
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="border p-2 text-center">No hay datos disponibles</td>
+                <td colSpan="6" className="border p-2 text-center">No hay datos disponibles</td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Controles de paginación */}
+      <div className="flex justify-center mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-3 py-1 mx-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
     </div>
   );

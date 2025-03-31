@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import axios from 'axios';
+import Api from '../utils/Api.jsx';
 
 // Registrar todos los elementos de Chart.js
 ChartJS.register(...registerables);
@@ -14,10 +14,11 @@ const Charts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://running-backend.koyeb.app/api/trainnings');
+        const response = await Api.get('/api/trainnings');
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setData([]); // En caso de error, establece datos vacíos
       }
     };
 
@@ -49,8 +50,14 @@ const Charts = () => {
   // Obtener los datos filtrados
   const filteredData = filterDataByPeriod(data, period);
 
-  // Agrupar los datos por mes
-  const groupDataByMonth = (data, period) => {
+  // Función para convertir pace (formato "mm:ss") a minutos como número decimal
+  const convertPaceToMinutes = (pace) => {
+    const [minutes, seconds] = pace.split(':').map(Number);
+    return minutes + seconds / 60;
+  };
+
+  // Agrupar los datos por mes para kilómetros
+  const groupDataByMonthForKms = (data, period) => {
     const now = new Date();
     let months = [];
 
@@ -98,8 +105,62 @@ const Charts = () => {
     };
   };
 
-  // Preparar los datos para la gráfica de kilómetros
-  const dataKms = groupDataByMonth(filteredData, period);
+  // Agrupar los datos por mes para velocidades
+  const groupDataByMonthForSpeed = (data, period) => {
+    const now = new Date();
+    let months = [];
+
+    if (period === 'mes') {
+      months = [now.toLocaleString('default', { month: 'long' })];
+    } else if (period === 'trimestre') {
+      for (let i = 0; i < 3; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    } else if (period === 'semestre') {
+      for (let i = 0; i < 6; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    } else if (period === 'año') {
+      for (let i = 0; i < 12; i++) {
+        months.push(new Date(now.getFullYear(), now.getMonth() - i).toLocaleString('default', { month: 'long' }));
+      }
+    }
+
+    const groupedData = data.reduce((acc, item) => {
+      const month = new Date(item.date).toLocaleString('default', { month: 'long' });
+      if (!acc[month]) {
+        acc[month] = { totalPace: 0, count: 0 };
+      }
+      acc[month].totalPace += convertPaceToMinutes(item.pace || '0:00'); // Convertir pace a minutos
+      acc[month].count += 1;
+      return acc;
+    }, {});
+
+    const dataWithAllMonths = months.reduce((acc, month) => {
+      const monthData = groupedData[month];
+      acc[month] = monthData ? monthData.totalPace / monthData.count : 0; // Promedio de pace
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(dataWithAllMonths).reverse(),
+      datasets: [
+        {
+          label: 'Pace Promedio (min/km)',
+          data: Object.values(dataWithAllMonths).reverse(),
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  // Preparar los datos para la gráfica seleccionada
+  const dataForChart =
+    chartType === 'kms'
+      ? groupDataByMonthForKms(filteredData, period)
+      : groupDataByMonthForSpeed(filteredData, period);
 
   const options = {
     responsive: true,
@@ -124,7 +185,6 @@ const Charts = () => {
         >
           <option value="kms">Kilómetros recorridos</option>
           <option value="velocities">Comparativo de Velocidades</option>
-          <option value="tenis">Comparativo por Tenis</option>
         </select>
       </div>
 
@@ -138,14 +198,14 @@ const Charts = () => {
           onChange={(e) => setPeriod(e.target.value)}
           className="mt-1 p-3 w-full border border-gray-300 rounded-md"
         >
-          <option value="mes">Mes</option>
+          <option value="mes">Mes Actual</option>
           <option value="trimestre">Trimestre</option>
           <option value="semestre">Semestre</option>
           <option value="año">Año</option>
         </select>
       </div>
 
-      <Bar data={dataKms} options={options} />
+      <Bar data={dataForChart} options={options} />
     </div>
   );
 };
