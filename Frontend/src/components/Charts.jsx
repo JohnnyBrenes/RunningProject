@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import Api from '../utils/Api.jsx';
 
@@ -146,7 +146,7 @@ const Charts = () => {
       labels: Object.keys(dataWithAllMonths).reverse(),
       datasets: [
         {
-          label: 'Pace Promedio (min/km)',
+          label: 'Ritmo Promedio (min/km)',
           data: Object.values(dataWithAllMonths).reverse(),
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
@@ -205,7 +205,11 @@ const Charts = () => {
         </select>
       </div>
 
-      <Bar data={dataForChart} options={options} />
+      {chartType === 'kms' ? (
+        <Bar data={dataForChart} options={options} />
+      ) : (
+        <Line data={dataForChart} options={options} />
+      )}
     </div>
   );
 };

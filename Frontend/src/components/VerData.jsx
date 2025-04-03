@@ -46,11 +46,12 @@ const VerData = () => {
 
   // Filtramos los datos basados en los filtros
   const filteredData = datos.filter(item => {
-    return (
-      (filtroMes ? getMonthFromDate(item.date).toLowerCase() === filtroMes.toLowerCase() : true) &&
-      (filtroTenis ? item.shoes.toLowerCase().includes(filtroTenis.toLowerCase()) : true)
-    );
+    const monthMatches = filtroMes === "" || getMonthFromDate(item.date).toLowerCase() === filtroMes.toLowerCase();
+    const shoesMatches = filtroTenis === "" || item.shoes.toLowerCase().includes(filtroTenis.toLowerCase());
+    return monthMatches && shoesMatches;
   });
+
+  console.log('Datos filtrados:', filteredData);
 
   // Ordenar los datos según la columna seleccionada
   const sortedData = [...filteredData].sort((a, b) => {
@@ -81,12 +82,37 @@ const VerData = () => {
     setCurrentPage(pageNumber);
   };
 
+  // Calcular totales
+  const totalKilometers = filteredData.reduce((sum, item) => sum + item.kilometers, 0);
+
+  const totalTime = filteredData.reduce((sum, item) => {
+    const [minutes, seconds] = item.time.split(':').map(Number);
+    return sum + minutes * 60 + seconds; // Convertir todo a segundos
+  }, 0);
+
+  const formattedTotalTime = () => {
+    console.log(hours, minutes, seconds);
+    const hours = Math.floor(totalTime / 3600);
+    const minutes = Math.floor((totalTime % 3600) / 60);
+    const seconds = totalTime % 60;
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const averagePace = () => {
+    if (totalKilometers === 0) return '0:00';
+    const paceSeconds = totalTime / totalKilometers;
+    const paceMinutes = Math.floor(paceSeconds / 60);
+    const paceRemainderSeconds = Math.round(paceSeconds % 60);
+    return `${paceMinutes}:${String(paceRemainderSeconds).padStart(2, '0')} min/km`;
+  };
+
   return (
     <div className="p-5">
       <h2 className="text-2xl mb-4">Ver Datos</h2>
 
-      {/* Filtros */}
+      {/* Filtros y Totales */}
       <div className="flex flex-wrap gap-4 mb-6">
+        {/* Filtros */}
         <div>
           <div className="mb-4">
             <label className="mr-2">Filtrar por mes:</label>
@@ -119,6 +145,14 @@ const VerData = () => {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Totales */}
+        <div className="p-4 bg-gray-100 rounded-lg shadow">
+          <h3 className="text-lg font-bold mb-2">Totales</h3>
+          <p><strong>Kilómetros Totales:</strong> {totalKilometers.toFixed(2)} km</p>
+          <p><strong>Tiempo Total:</strong> {formattedTotalTime()}</p>
+          <p><strong>Ritmo Promedio:</strong> {averagePace()}</p>
         </div>
       </div>
 
