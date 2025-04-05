@@ -37,16 +37,6 @@ builder.Logging.AddConsole();
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(80); // Puerto 80 para Docker
-    if (!builder.Environment.IsDevelopment()) // Solo habilitar HTTPS fuera de desarrollo
-    {
-        options.ListenLocalhost(
-            5291,
-            listenOptions =>
-            {
-                listenOptions.UseHttps(); // Habilitar HTTPS
-            }
-        );
-    }
 });
 
 var app = builder.Build();
