@@ -47,23 +47,33 @@ const VerData = () => {
   // Filtramos los datos basados en los filtros
   const filteredData = datos.filter(item => {
     const monthMatches = filtroMes === "" || getMonthFromDate(item.date).toLowerCase() === filtroMes.toLowerCase();
-    const shoesMatches = filtroTenis === "" || item.shoes.toLowerCase().includes(filtroTenis.toLowerCase());
+    const shoesMatches = filtroTenis === "" || item.shoes.toLowerCase() === filtroTenis.toLowerCase();
     return monthMatches && shoesMatches;
   });
 
   // Ordenar los datos según la columna seleccionada
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortColumn) return 0; // Si no hay columna seleccionada, no ordenar
-    const valueA = a[sortColumn];
-    const valueB = b[sortColumn];
 
-    if (typeof valueA === 'string') {
+    let valueA = a[sortColumn];
+    let valueB = b[sortColumn];
+
+    // Si la columna es 'date', convertir las fechas a objetos Date para ordenarlas correctamente
+    if (sortColumn === 'date') {
+      valueA = new Date(valueA.split('/').reverse().join('-')); // Convertir dd/mm/yyyy a yyyy-mm-dd
+      valueB = new Date(valueB.split('/').reverse().join('-'));
+    }
+
+    if (typeof valueA === 'string' && typeof valueB === 'string') {
       return sortOrder === 'asc'
         ? valueA.localeCompare(valueB)
         : valueB.localeCompare(valueA);
-    } else if (typeof valueA === 'number') {
+    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+      return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+    } else if (valueA instanceof Date && valueB instanceof Date) {
       return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
     }
+
     return 0;
   });
 
@@ -78,6 +88,19 @@ const VerData = () => {
   // Manejar el cambio de página
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  // Manejar la eliminación de un registro
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Está seguro de que desea borrar este registro?')) {
+      try {
+        await Api.delete(`/api/trainnings/${id}`);
+        setDatos(prevDatos => prevDatos.filter(item => item.id !== id));
+        console.log(`Registro con ID ${id} eliminado.`);
+      } catch (error) {
+        console.error('Error al eliminar el registro:', error);
+      }
+    }
   };
 
   // Calcular totales
@@ -160,33 +183,68 @@ const VerData = () => {
             <tr>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'date' ? 'bg-blue-700' : ''}`}
-                onClick={() => setSortColumn('date')}
+                onClick={() => {
+                  if (sortColumn === 'date') {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortColumn('date');
+                    setSortOrder('desc'); // Orden descendente por defecto
+                  }
+                }}
               >
-                Fecha
+                Fecha {sortColumn === 'date' && (sortOrder === 'asc' ? '▲' : '▼')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'kilometers' ? 'bg-blue-700' : ''}`}
-                onClick={() => setSortColumn('kilometers')}
+                onClick={() => {
+                  if (sortColumn === 'kilometers') {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortColumn('kilometers');
+                    setSortOrder('desc'); // Orden descendente por defecto
+                  }
+                }}
               >
-                Kilómetros
+                Kilómetros {sortColumn === 'kilometers' && (sortOrder === 'asc' ? '▲' : '▼')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'time' ? 'bg-blue-700' : ''}`}
-                onClick={() => setSortColumn('time')}
+                onClick={() => {
+                  if (sortColumn === 'time') {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortColumn('time');
+                    setSortOrder('desc'); // Orden descendente por defecto
+                  }
+                }}
               >
-                Tiempo
+                Tiempo {sortColumn === 'time' && (sortOrder === 'asc' ? '▲' : '▼')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'pace' ? 'bg-blue-700' : ''}`}
-                onClick={() => setSortColumn('pace')}
+                onClick={() => {
+                  if (sortColumn === 'pace') {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortColumn('pace');
+                    setSortOrder('desc'); // Orden descendente por defecto
+                  }
+                }}
               >
-                Ritmo Promedio
+                Ritmo Promedio {sortColumn === 'pace' && (sortOrder === 'asc' ? '▲' : '▼')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'shoes' ? 'bg-blue-700' : ''}`}
-                onClick={() => setSortColumn('shoes')}
+                onClick={() => {
+                  if (sortColumn === 'shoes') {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortColumn('shoes');
+                    setSortOrder('desc'); // Orden descendente por defecto
+                  }
+                }}
               >
-                Tenis
+                Tenis {sortColumn === 'shoes' && (sortOrder === 'asc' ? '▲' : '▼')}
               </th>
               <th className="border p-2">Acciones</th>
             </tr>
@@ -202,7 +260,7 @@ const VerData = () => {
                   <td className="border p-2">{item.shoes}</td>
                   <td className="border p-2 text-center">
                     <button
-                      onClick={() => console.log('Eliminar', item.id)}
+                      onClick={() => handleDelete(item.id)}
                       className="bg-red-500 text-white px-3 py-1 rounded"
                     >
                       Borrar
