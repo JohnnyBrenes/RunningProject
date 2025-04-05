@@ -16,14 +16,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Users>>> GetAll()
+    public async Task<ActionResult<List<UsersDto>>> GetAll()
     {
         var users = await _userService.GetAllAsync();
         return Ok(users);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Users>> GetById(Guid id)
+    public async Task<ActionResult<UsersDto>> GetById(Guid id)
     {
         var user = await _userService.GetByIdAsync(id);
         if (user == null)
@@ -34,7 +34,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Users>> Create([FromBody] Users user)
+    public async Task<ActionResult<UsersDto>> Create([FromBody] UsersDto user)
     {
         var createdUser = await _userService.CreateAsync(user);
         return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
