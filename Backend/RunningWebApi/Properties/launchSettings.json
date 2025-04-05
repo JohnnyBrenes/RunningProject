@@ -13,7 +13,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://running-backend.koyeb.app",
+      "applicationUrl": "https://localhost:5291",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
