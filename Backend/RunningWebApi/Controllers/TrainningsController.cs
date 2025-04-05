@@ -30,6 +30,13 @@ public class TrainningsController(SupabaseService supabaseService) : ControllerB
         return Ok(result);
     }
 
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<List<TrainningResponseDto>>> GetByUserId(string userId)
+    {
+        var result = await _supabaseService.GetByUserIdAsync(userId);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<ActionResult<TrainningResponseDto>> Post([FromBody] TrainningDto trainning)
     {

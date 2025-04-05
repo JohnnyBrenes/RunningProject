@@ -92,6 +92,35 @@ public class SupabaseService
         };
     }
 
+    public async Task<List<TrainningResponseDto>> GetByUserIdAsync(string userId)
+    {
+        _logger.LogInformation("Fetching trainnings for UserId: {UserId} from Supabase...", userId);
+        var result = await _client
+            .From<Trainnings>()
+            .Filter("userid", Operator.Equals, userId.ToString())
+            .Get();
+
+        if (result.Models.Count == 0)
+        {
+            _logger.LogWarning("No trainnings found for UserId: {UserId} in Supabase.", userId);
+            return new List<TrainningResponseDto>();
+        }
+
+        _logger.LogInformation("Fetched {Count} trainnings for UserId: {UserId} from Supabase.", result.Models.Count, userId);
+        return result
+            .Models.Select(t => new TrainningResponseDto
+            {
+                Id = t.Id,
+                Date = t.Date,
+                Kilometers = t.Kilometers,
+                Time = t.Time,
+                Pace = t.Pace,
+                Shoes = t.Shoes,
+                UserId = t.UserId,
+            })
+            .ToList();
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         _logger.LogInformation("Deleting training with Id: {Id} from Supabase...", id);
