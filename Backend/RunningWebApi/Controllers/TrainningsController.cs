@@ -8,9 +8,9 @@ namespace RunningWebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TrainningsController(SupabaseService supabaseService) : ControllerBase
+public class TrainningsController(TrainningService supabaseService) : ControllerBase
 {
-    private readonly SupabaseService _supabaseService = supabaseService;
+    private readonly TrainningService _supabaseService = supabaseService;
 
     [HttpGet]
     public async Task<ActionResult<List<TrainningResponseDto>>> Get()

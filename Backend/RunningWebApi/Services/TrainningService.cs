@@ -6,22 +6,18 @@ using static Supabase.Postgrest.Constants;
 
 namespace RunningWebApi.Services;
 
-public class SupabaseService
+public class TrainningService
 {
     private readonly Supabase.Client _client;
-    private readonly ILogger<SupabaseService> _logger;
+    private readonly ILogger<TrainningService> _logger;
 
-    public SupabaseService(IConfiguration config, ILogger<SupabaseService> logger)
+    public TrainningService(
+        IConfiguration config,
+        SupabaseClientService service,
+        ILogger<TrainningService> logger
+    )
     {
-        var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
-        var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
-
-        if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(key))
-        {
-            throw new InvalidOperationException("Supabase URL and Key must be provided.");
-        }
-
-        _client = new Supabase.Client(url, key);
+        _client = service.GetClient();
         _logger = logger;
     }
 
@@ -106,7 +102,11 @@ public class SupabaseService
             return new List<TrainningResponseDto>();
         }
 
-        _logger.LogInformation("Fetched {Count} trainnings for UserId: {UserId} from Supabase.", result.Models.Count, userId);
+        _logger.LogInformation(
+            "Fetched {Count} trainnings for UserId: {UserId} from Supabase.",
+            result.Models.Count,
+            userId
+        );
         return result
             .Models.Select(t => new TrainningResponseDto
             {

@@ -14,8 +14,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Registrar SupabaseService
-builder.Services.AddSingleton<SupabaseService>();
+// Registrar Servicios
+builder.Services.AddSingleton<SupabaseClientService>();
+builder.Services.AddSingleton<TrainningService>();
+builder.Services.AddScoped<UserService>();
 
 // Configurar CORS
 builder.Services.AddCors(options =>
