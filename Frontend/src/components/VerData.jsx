@@ -51,8 +51,6 @@ const VerData = () => {
     return monthMatches && shoesMatches;
   });
 
-  console.log('Datos filtrados:', filteredData);
-
   // Ordenar los datos según la columna seleccionada
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortColumn) return 0; // Si no hay columna seleccionada, no ordenar
@@ -91,7 +89,6 @@ const VerData = () => {
   }, 0);
 
   const formattedTotalTime = () => {
-    console.log(hours, minutes, seconds);
     const hours = Math.floor(totalTime / 3600);
     const minutes = Math.floor((totalTime % 3600) / 60);
     const seconds = totalTime % 60;
