@@ -125,7 +125,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/health", () => Results.Ok("Healthy"));
 
 // Middleware adicional
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
