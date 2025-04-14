@@ -52,7 +52,12 @@ const Formulario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Api.post('/api/trainnings', formData);
+      const username = localStorage.getItem('username');
+      const dataToSend = {
+        ...formData, userId: username
+      };
+
+      const response = await Api.post('/api/trainnings', dataToSend);
       setSuccessMessage('Datos registrados exitosamente');
       setFormData({
         date: '',
