@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RunningWebApi.Models;
 using RunningWebApi.Services;
 
 namespace RunningWebApi.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
+[Authorize]
 public class UsersController : ControllerBase
 {
     private readonly UserService _userService;

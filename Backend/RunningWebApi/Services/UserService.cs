@@ -30,18 +30,6 @@ public class UserService
         {
             _logger.LogWarning("No users found in Supabase.");
         }
-        else
-        {
-            foreach (var user in result.Models)
-            {
-                _logger.LogInformation(
-                    "User: {Id}, {Username}, {Email}",
-                    user.Id,
-                    user.Username,
-                    user.Email
-                );
-            }
-        }
 
         return result
             .Models.Select(u => new UsersDto
@@ -78,16 +66,20 @@ public class UserService
     public async Task<UsersDto> CreateAsync(UsersDto user)
     {
         _logger.LogInformation("Creating a new user in Supabase...");
-        try{
+        try
+        {
+            // Hashear la contraseña antes de almacenarla
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
             Users newUser = new Users
             {
                 Id = Guid.NewGuid(),
                 Username = user.Username,
                 Email = user.Email,
-                PasswordHash = user.PasswordHash,
+                PasswordHash = hashedPassword,
             };
             var result = await _client.From<Users>().Insert(newUser);
-            if (result.Models.Count == 0 || result.Models == null)  
+            if (result.Models.Count == 0 || result.Models == null)
             {
                 throw new Exception("Failed to create user in Supabase.");
             }
