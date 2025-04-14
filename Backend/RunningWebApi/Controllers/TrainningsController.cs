@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RunningWebApi.Models;
 using RunningWebApi.Services;
 
 namespace RunningWebApi.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
+[Authorize]
 public class TrainningsController(TrainningService supabaseService) : ControllerBase
 {
     private readonly TrainningService _supabaseService = supabaseService;
