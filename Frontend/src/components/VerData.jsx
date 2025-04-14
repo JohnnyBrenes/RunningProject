@@ -13,7 +13,9 @@ const VerData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await Api.get('/api/trainnings');
+        const username = localStorage.getItem('username');
+        const response = await Api.get(`/api/Trainnings/user/${username}`);
+        
         setDatos(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);

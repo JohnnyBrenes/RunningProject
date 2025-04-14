@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import Api from '../utils/Api.jsx';
+import { use } from 'react';
 
 // Registrar todos los elementos de Chart.js
 ChartJS.register(...registerables);
@@ -14,7 +15,8 @@ const Charts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await Api.get('/api/trainnings');
+        const username = localStorage.getItem('username');
+        const response = await Api.get(`/api/Trainnings/user/${username}`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
