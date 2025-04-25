@@ -1,9 +1,10 @@
-import React, { useState } from "react"; // Asegúrate de incluir useState
+import React, { useState } from "react";
 import Api from "../utils/Api";
 
 const Login = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar el spinner y deshabilitar campos
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -12,6 +13,8 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Activa el estado de carga
+    setErrorMessage(""); // Limpia el mensaje de error previo
     try {
       const response = await Api.post("/api/auth/login", formData);
       const { token } = response.data;
@@ -26,6 +29,8 @@ const Login = ({ onLoginSuccess }) => {
       setErrorMessage("");
     } catch (error) {
       setErrorMessage("Credenciales inválidas. Intente nuevamente.");
+    } finally {
+      setIsLoading(false); // Desactiva el estado de carga
     }
   };
 
@@ -50,6 +55,7 @@ const Login = ({ onLoginSuccess }) => {
             onChange={handleChange}
             className="mt-1 p-3 w-full border border-gray-300 rounded-md"
             autoComplete="username"
+            disabled={isLoading} // Deshabilita el campo si está cargando
           />
         </div>
         <div className="mb-4">
@@ -64,17 +70,26 @@ const Login = ({ onLoginSuccess }) => {
             onChange={handleChange}
             className="mt-1 p-3 w-full border border-gray-300 rounded-md"
             autoComplete="current-password"
+            disabled={isLoading} // Deshabilita el campo si está cargando
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600"
+          className={`w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={isLoading} // Deshabilita el botón si está cargando
         >
-          Iniciar Sesión
+          {isLoading ? "Procesando..." : "Iniciar Sesión"}
         </button>
+        {isLoading && (
+          <div className="flex justify-center mt-4">
+            <div className="loader border-t-4 border-blue-500 rounded-full w-6 h-6 animate-spin"></div>
+          </div>
+        )}
       </form>
     </div>
   );
 };
 
-export default Login; 
+export default Login;
