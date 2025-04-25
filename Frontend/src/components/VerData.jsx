@@ -128,6 +128,7 @@ const VerData = () => {
     return `${paceMinutes}:${String(paceRemainderSeconds).padStart(2, '0')} min/km`;
   };
 
+  // Renderizamos el componente
   return (
     <div className="p-5">
       <h2 className="text-2xl mb-4">Ver Datos</h2>
@@ -194,7 +195,7 @@ const VerData = () => {
                   }
                 }}
               >
-                Fecha {sortColumn === 'date' && (sortOrder === 'asc' ? '▲' : '▼')}
+                Fecha {sortColumn === 'date' && (sortOrder === 'asc' ? '▼' : '▲')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'kilometers' ? 'bg-blue-700' : ''}`}
@@ -207,7 +208,7 @@ const VerData = () => {
                   }
                 }}
               >
-                Kilómetros {sortColumn === 'kilometers' && (sortOrder === 'asc' ? '▲' : '▼')}
+                Kilómetros {sortColumn === 'kilometers' && (sortOrder === 'asc' ? '▼' : '▲')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'time' ? 'bg-blue-700' : ''}`}
@@ -220,7 +221,7 @@ const VerData = () => {
                   }
                 }}
               >
-                Tiempo {sortColumn === 'time' && (sortOrder === 'asc' ? '▲' : '▼')}
+                Tiempo {sortColumn === 'time' && (sortOrder === 'asc' ? '▼' : '▲')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'pace' ? 'bg-blue-700' : ''}`}
@@ -233,7 +234,7 @@ const VerData = () => {
                   }
                 }}
               >
-                Ritmo Promedio {sortColumn === 'pace' && (sortOrder === 'asc' ? '▲' : '▼')}
+                Ritmo Promedio {sortColumn === 'pace' && (sortOrder === 'asc' ? '▼' : '▲')}
               </th>
               <th
                 className={`border p-2 cursor-pointer ${sortColumn === 'shoes' ? 'bg-blue-700' : ''}`}
@@ -246,11 +247,13 @@ const VerData = () => {
                   }
                 }}
               >
-                Tenis {sortColumn === 'shoes' && (sortOrder === 'asc' ? '▲' : '▼')}
+                Tenis {sortColumn === 'shoes' && (sortOrder === 'asc' ? '▼' : '▲')}
               </th>
               <th className="border p-2">Acciones</th>
             </tr>
           </thead>
+          
+          {/* Datos de la tabla */}
           <tbody>
             {currentData.length > 0 ? (
               currentData.map((item, index) => (
