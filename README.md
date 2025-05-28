@@ -59,5 +59,6 @@ RunningProject/
 │ │ ├── locales/ # recursos de idioma
 │ │ ├── utils/ # Utilidades (como Axios)
 │ │ └── App.jsx # Componente principal
-│ └── package.json # Dependencias del frontend └── README.md # Documentación del proyecto
+│ └── package.json # Dependencias del frontend
+└── README.md # Documentación del proyecto
 ```
