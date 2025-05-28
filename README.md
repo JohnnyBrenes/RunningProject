@@ -13,6 +13,7 @@ Este proyecto es una aplicación para gestionar y visualizar datos relacionados 
 ## Características
 
 - **Frontend**:
+
   - Visualización de datos de entrenamientos.
   - Filtros por mes y por tenis usados.
   - Paginación de registros.
@@ -30,27 +31,33 @@ Este proyecto es una aplicación para gestionar y visualizar datos relacionados 
 ## Tecnologías Utilizadas
 
 ### Frontend
+
 - React
 - TailwindCSS (para estilos)
 - Axios (para llamadas a la API)
 
 ### Backend
+
 - .NET 8
 - Supabase (base de datos)
 
 ---
 
 ## Estructura del Proyecto
-RunningProject/ 
+
+```text
+RunningProject/
 ├── Backend/ # Código del backend
 │ ├── RunningWebApi/
-│ │ ├── Controllers/ # Controladores de la API 
-│ │ ├── Models/ # Modelos de datos 
-│ │ ├── Program.cs # Configuración principal del servidor 
-| └ └── appsettings.json # Configuración de la base de datos 
-├── Frontend/ # Código del frontend 
-│ ├── src/ 
-│ │ ├── components/ # Componentes de React 
-│ │ ├── utils/ # Utilidades (como Axios) 
-│ │ └── App.jsx # Componente principal 
+│ │ ├── Controllers/ # Controladores de la API
+│ │ ├── Models/ # Modelos de datos
+│ │ ├── Program.cs # Configuración principal del servidor
+| └ └── appsettings.json # Configuración de la base de datos
+├── Frontend/ # Código del frontend
+│ ├── src/
+│ │ ├── components/ # Componentes de React
+│ │ ├── locales/ # recursos de idioma
+│ │ ├── utils/ # Utilidades (como Axios)
+│ │ └── App.jsx # Componente principal
 │ └── package.json # Dependencias del frontend └── README.md # Documentación del proyecto
+```
