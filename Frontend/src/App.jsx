@@ -2,16 +2,20 @@ import React, { useState, useEffect } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Sidebar from "./components/Sidebar";
-import Formulario from "./components/Formulario";
+import InsertData from "./components/InsertData";
 import Charts from "./components/Charts";
-import VerData from "./components/VerData";
+import ViewData from "./components/ViewData";
+import "./i18n"; // Importar configuración de i18n
+import useAppTranslation from "./utils/useAppTranslation";
+import LanguageSelector from "./components/LanguageSelector";
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
-  const [isRegistering, setIsRegistering] = useState(false); // Controla si está en la pantalla de registro
-  const [selectedOption, setSelectedOption] = useState("charts"); // Controla la vista actual
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("charts");
 
-  // Verificar si el usuario ya está autenticado al cargar la app
+  const { t, i18n } = useAppTranslation();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -19,14 +23,12 @@ const App = () => {
     }
   }, []);
 
-  // Manejar el cierre de sesión
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     setIsAuthenticated(false);
   };
 
-  // Si no está autenticado, mostrar Login o Register
   if (!isAuthenticated) {
     return isRegistering ? (
       <Register onRegisterSuccess={() => setIsRegistering(false)} />
@@ -38,45 +40,47 @@ const App = () => {
     );
   }
 
-  // Si está autenticado, mostrar el contenido principal
   return (
     <div className="flex h-screen">
       {/* Sidebar en pantallas grandes */}
       <div className="hidden md:block md:w-64 bg-gray-800 text-white p-5">
+        {/* Selector de idioma reutilizable */}
+        <LanguageSelector />
         <Sidebar onSelectOption={setSelectedOption} />
         <button
           onClick={handleLogout}
           className="mt-4 w-full bg-red-500 text-white p-2 rounded"
         >
-          Cerrar Sesión
+          {t("logout")}
         </button>
       </div>
 
       {/* Contenido principal */}
       <div className="flex-1 p-5 overflow-auto">
-        {/* Botón Cerrar Sesión y Select de opciones en pantallas pequeñas */}
+        {/* Selector de idioma en pantallas pequeñas */}
         <div className="md:hidden mb-4 flex flex-col gap-4">
+          <LanguageSelector id="language-mobile" />
           <button
             onClick={handleLogout}
             className="w-full bg-red-500 text-white p-2 rounded"
           >
-            Cerrar Sesión
+            {t("logout")}
           </button>
           <select
             value={selectedOption}
             onChange={(e) => setSelectedOption(e.target.value)}
             className="p-2 border rounded w-full"
           >
-            <option value="charts">Ver Gráficas</option>
-            <option value="form">Ingresar Datos</option>
-            <option value="verData">Ver Datos</option>
+            <option value="charts">{t("charts")}</option>
+            <option value="form">{t("form")}</option>
+            <option value="verData">{t("verData")}</option>
           </select>
         </div>
 
         {/* Contenido según la opción seleccionada */}
         {selectedOption === "charts" && <Charts />}
-        {selectedOption === "form" && <Formulario />}
-        {selectedOption === "verData" && <VerData />}
+        {selectedOption === "form" && <InsertData />}
+        {selectedOption === "verData" && <ViewData />}
       </div>
     </div>
   );
