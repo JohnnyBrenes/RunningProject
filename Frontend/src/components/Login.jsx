@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import Api from "../utils/Api";
+import useAppTranslation from "../utils/useAppTranslation";
+import LanguageSelector from "./LanguageSelector";
 
 const Login = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar el spinner y deshabilitar campos
+
+  const { t, i18n } = useAppTranslation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +32,7 @@ const Login = ({ onLoginSuccess }) => {
 
       setErrorMessage("");
     } catch (error) {
-      setErrorMessage("Credenciales inválidas. Intente nuevamente.");
+      setErrorMessage(t("invalid_credentials"));
     } finally {
       setIsLoading(false); // Desactiva el estado de carga
     }
@@ -36,7 +40,8 @@ const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className="max-w-md mx-auto bg-white p-5 rounded-md shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-5">Iniciar Sesión</h2>
+      <LanguageSelector className="justify-center" id="language-login" />
+      <h2 className="text-2xl font-bold text-center mb-5">{t("login")}</h2>
       {errorMessage && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-400 rounded">
           {errorMessage}
@@ -44,8 +49,11 @@ const Login = ({ onLoginSuccess }) => {
       )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Usuario
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {t("username")}
           </label>
           <input
             type="text"
@@ -55,12 +63,15 @@ const Login = ({ onLoginSuccess }) => {
             onChange={handleChange}
             className="mt-1 p-3 w-full border border-gray-300 rounded-md"
             autoComplete="username"
-            disabled={isLoading} // Deshabilita el campo si está cargando
+            disabled={isLoading}
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Contraseña
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {t("password")}
           </label>
           <input
             type="password"
@@ -70,7 +81,7 @@ const Login = ({ onLoginSuccess }) => {
             onChange={handleChange}
             className="mt-1 p-3 w-full border border-gray-300 rounded-md"
             autoComplete="current-password"
-            disabled={isLoading} // Deshabilita el campo si está cargando
+            disabled={isLoading}
           />
         </div>
         <button
@@ -78,9 +89,9 @@ const Login = ({ onLoginSuccess }) => {
           className={`w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 ${
             isLoading ? "opacity-50 cursor-not-allowed" : ""
           }`}
-          disabled={isLoading} // Deshabilita el botón si está cargando
+          disabled={isLoading}
         >
-          {isLoading ? "Procesando..." : "Iniciar Sesión"}
+          {isLoading ? t("processing") : t("login")}
         </button>
         {isLoading && (
           <div className="flex justify-center mt-4">
