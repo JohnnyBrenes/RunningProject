@@ -26,13 +26,13 @@ const InsertData = () => {
       const date = new Date(value);
       // Usar claves traducidas para los días
       const days = [
-        t("sunday"),
         t("monday"),
         t("tuesday"),
         t("wednesday"),
         t("thursday"),
         t("friday"),
         t("saturday"),
+        t("sunday"),
       ];
       setDayOfWeek(days[date.getDay()]);
     }
