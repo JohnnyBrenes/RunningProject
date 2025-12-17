@@ -121,6 +121,51 @@ public class TrainningService
             .ToList();
     }
 
+    public async Task<List<TrainningResponseDto>> GetByUserIdAndYearAsync(string userId, int? year)
+    {
+        _logger.LogInformation(
+            "Fetching trainnings for UserId: {UserId}, Year: {Year} from Supabase...",
+            userId,
+            year
+        );
+        var result = await _client
+            .From<Trainnings>()
+            .Filter("userid", Operator.Equals, userId.ToString())
+            .Get();
+
+        if (result.Models.Count == 0)
+        {
+            _logger.LogWarning("No trainnings found for UserId: {UserId} in Supabase.", userId);
+            return new List<TrainningResponseDto>();
+        }
+
+        // Filter by year if provided
+        var filtered = result.Models;
+        if (year.HasValue)
+        {
+            filtered = filtered.Where(t => t.Date.Year == year.Value).ToList();
+        }
+
+        _logger.LogInformation(
+            "Fetched {Count} trainnings for UserId: {UserId}, Year: {Year} from Supabase.",
+            filtered.Count,
+            userId,
+            year
+        );
+        return filtered
+            .Select(t => new TrainningResponseDto
+            {
+                Id = t.Id,
+                Date = t.Date,
+                Kilometers = t.Kilometers,
+                Time = t.Time,
+                Pace = t.Pace,
+                Shoes = t.Shoes,
+                UserId = t.UserId,
+            })
+            .ToList();
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         _logger.LogInformation("Deleting training with Id: {Id} from Supabase...", id);
@@ -198,5 +243,33 @@ public class TrainningService
             );
             throw;
         }
+    }
+
+    public async Task<List<int>> GetYearsByUserIdAsync(string userId)
+    {
+        _logger.LogInformation("Fetching years for UserId: {UserId} from Supabase...", userId);
+        var result = await _client
+            .From<Trainnings>()
+            .Filter("userid", Operator.Equals, userId.ToString())
+            .Get();
+
+        if (result.Models.Count == 0)
+        {
+            _logger.LogWarning("No trainnings found for UserId: {UserId} in Supabase.", userId);
+            return new List<int>();
+        }
+
+        var years = result
+            .Models.Select(t => t.Date.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToList();
+
+        _logger.LogInformation(
+            "Fetched {Count} distinct years for UserId: {UserId} from Supabase.",
+            years.Count,
+            userId
+        );
+        return years;
     }
 }

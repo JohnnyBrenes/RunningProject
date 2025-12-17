@@ -39,6 +39,23 @@ public class TrainningsController(TrainningService supabaseService) : Controller
         return Ok(result);
     }
 
+    [HttpGet("user/{userId}/year/{year}")]
+    public async Task<ActionResult<List<TrainningResponseDto>>> GetByUserIdAndYear(
+        string userId,
+        int year
+    )
+    {
+        var result = await _supabaseService.GetByUserIdAndYearAsync(userId, year);
+        return Ok(result);
+    }
+
+    [HttpGet("user/{userId}/years")]
+    public async Task<ActionResult<List<int>>> GetYearsByUserId(string userId)
+    {
+        var result = await _supabaseService.GetYearsByUserIdAsync(userId);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<ActionResult<TrainningResponseDto>> Post([FromBody] TrainningDto trainning)
     {
