@@ -6,6 +6,7 @@ const ViewData = () => {
   const { t, i18n } = useAppTranslation();
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroTenis, setFiltroTenis] = useState("");
+  const [filtroLocation, setFiltroLocation] = useState("");
   const [filtroYear, setFiltroYear] = useState(
     new Date().getFullYear().toString()
   );
@@ -78,7 +79,10 @@ const ViewData = () => {
     const shoesMatches =
       filtroTenis === "" ||
       item.shoes.toLowerCase() === filtroTenis.toLowerCase();
-    return monthMatches && shoesMatches;
+    const locationMatches =
+      filtroLocation === "" ||
+      item.location.toLowerCase() === filtroLocation.toLowerCase();
+    return monthMatches && shoesMatches && locationMatches;
   });
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -203,6 +207,23 @@ const ViewData = () => {
               ))}
             </select>
           </div>
+          <div className="mb-4">
+            <label className="mr-2">{t("filter_by_location")}</label>
+            <select
+              value={filtroLocation}
+              onChange={(e) => setFiltroLocation(e.target.value)}
+              className="p-2 border rounded"
+            >
+              <option value="">{t("all_locations")}</option>
+              {[
+                ...new Set(datos.map((item) => item.location).filter(Boolean)),
+              ].map((location) => (
+                <option key={location} value={location}>
+                  {t(location.toLowerCase())}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="p-4 bg-gray-100 rounded-lg shadow">
           <h3 className="text-lg font-bold mb-2">{t("totals")}</h3>
@@ -303,6 +324,22 @@ const ViewData = () => {
                 {t("shoes_col")}{" "}
                 {sortColumn === "shoes" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
+              <th
+                className={`border p-2 cursor-pointer ${
+                  sortColumn === "location" ? "bg-blue-700" : ""
+                }`}
+                onClick={() => {
+                  if (sortColumn === "location") {
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortColumn("location");
+                    setSortOrder("desc");
+                  }
+                }}
+              >
+                {t("location_col")}{" "}
+                {sortColumn === "location" && (sortOrder === "asc" ? "▼" : "▲")}
+              </th>
               <th className="border p-2">{t("actions")}</th>
             </tr>
           </thead>
@@ -318,6 +355,9 @@ const ViewData = () => {
                   <td className="border p-2">{item.time}</td>
                   <td className="border p-2">{item.pace}</td>
                   <td className="border p-2">{item.shoes}</td>
+                  <td className="border p-2">
+                    {item.location ? t(item.location.toLowerCase()) : "-"}
+                  </td>
                   <td className="border p-2 text-center">
                     <button
                       onClick={() => handleDelete(item.id)}
@@ -330,7 +370,7 @@ const ViewData = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="border p-2 text-center">
+                <td colSpan="7" className="border p-2 text-center">
                   {t("no_data")}
                 </td>
               </tr>

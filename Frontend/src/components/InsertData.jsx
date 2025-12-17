@@ -10,6 +10,7 @@ const InsertData = () => {
     time: "",
     pace: "",
     shoes: "",
+    location: "Treadmill",
   });
   const [dayOfWeek, setDayOfWeek] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -76,6 +77,7 @@ const InsertData = () => {
         time: "",
         pace: "",
         shoes: "",
+        location: "Treadmill",
       });
       setDayOfWeek("");
     } catch (error) {
@@ -176,6 +178,24 @@ const InsertData = () => {
             onChange={handleChange}
             className="mt-1 p-3 w-full border border-gray-300 rounded-md"
           />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {t("location")}
+          </label>
+          <select
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+          >
+            <option value="Treadmill">{t("treadmill")}</option>
+            <option value="Outdoor">{t("outdoor")}</option>
+          </select>
         </div>
         <button
           type="submit"

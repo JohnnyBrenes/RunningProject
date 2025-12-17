@@ -24,6 +24,9 @@ public class Trainnings : BaseModel
     [Column("shoes")]
     public string Shoes { get; set; } = string.Empty;
 
+    [Column("location")]
+    public string Location { get; set; } = "Treadmill";
+
     [Column("userid")]
     public string UserId { get; set; } = string.Empty;
 }
