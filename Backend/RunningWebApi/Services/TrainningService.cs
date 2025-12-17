@@ -57,6 +57,7 @@ public class TrainningService
                 Time = t.Time,
                 Pace = t.Pace,
                 Shoes = t.Shoes,
+                Location = t.Location,
                 UserId = t.UserId,
             })
             .ToList();
@@ -84,6 +85,7 @@ public class TrainningService
             Time = result.Time,
             Pace = result.Pace,
             Shoes = result.Shoes,
+            Location = result.Location,
             UserId = result.UserId,
         };
     }
@@ -116,6 +118,7 @@ public class TrainningService
                 Time = t.Time,
                 Pace = t.Pace,
                 Shoes = t.Shoes,
+                Location = t.Location,
                 UserId = t.UserId,
             })
             .ToList();
@@ -161,6 +164,7 @@ public class TrainningService
                 Time = t.Time,
                 Pace = t.Pace,
                 Shoes = t.Shoes,
+                Location = t.Location,
                 UserId = t.UserId,
             })
             .ToList();
@@ -230,6 +234,7 @@ public class TrainningService
                 Time = createdTrainning.Time,
                 Pace = createdTrainning.Pace,
                 Shoes = createdTrainning.Shoes,
+                Location = createdTrainning.Location,
                 UserId = createdTrainning.UserId,
             };
         }
