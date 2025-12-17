@@ -6,6 +6,10 @@ const ViewData = () => {
   const { t, i18n } = useAppTranslation();
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroTenis, setFiltroTenis] = useState("");
+  const [filtroYear, setFiltroYear] = useState(
+    new Date().getFullYear().toString()
+  );
+  const [availableYears, setAvailableYears] = useState([]);
   const [datos, setDatos] = useState([]);
   const [sortColumn, setSortColumn] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -13,17 +17,41 @@ const ViewData = () => {
   const recordsPerPage = 15;
 
   useEffect(() => {
+    const fetchYears = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        const response = await Api.get(
+          `/api/Trainnings/user/${username}/years`
+        );
+        setAvailableYears(response.data);
+      } catch (error) {
+        console.error("Error fetching years:", error);
+      }
+    };
+    fetchYears();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const username = localStorage.getItem("username");
-        const response = await Api.get(`/api/Trainnings/user/${username}`);
+        let url = `/api/Trainnings/user/${username}`;
+
+        // If a specific year is selected, use year filter
+        if (filtroYear !== "all") {
+          url = `/api/Trainnings/user/${username}/year/${filtroYear}`;
+        } else {
+          url = `/api/Trainnings/user/${username}`;
+        }
+
+        const response = await Api.get(url);
         setDatos(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [filtroYear]);
 
   // Lista de meses traducidos
   const meses = Array.from({ length: 12 }, (_, i) =>
@@ -127,6 +155,24 @@ const ViewData = () => {
       <h2 className="text-2xl mb-4">{t("verData")}</h2>
       <div className="flex flex-wrap gap-4 mb-6">
         <div>
+          <div className="mb-4">
+            <label className="mr-2">{t("filter_by_year")}</label>
+            <select
+              value={filtroYear}
+              onChange={(e) => {
+                setFiltroYear(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="p-2 border rounded"
+            >
+              <option value="all">{t("all_years")}</option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="mb-4">
             <label className="mr-2">{t("filter_by_month")}</label>
             <select

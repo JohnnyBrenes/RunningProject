@@ -10,14 +10,42 @@ ChartJS.register(...registerables);
 const Charts = () => {
   const [chartType, setChartType] = useState("kms"); // Controla el tipo de gráfica
   const [period, setPeriod] = useState("mes"); // Controla el periodo de comparación
+  const [filtroYear, setFiltroYear] = useState(
+    new Date().getFullYear().toString()
+  );
+  const [availableYears, setAvailableYears] = useState([]);
   const [data, setData] = useState([]); // Datos obtenidos del backend
   const { t, i18n } = useAppTranslation();
+
+  useEffect(() => {
+    const fetchYears = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        const response = await Api.get(
+          `/api/Trainnings/user/${username}/years`
+        );
+        setAvailableYears(response.data);
+      } catch (error) {
+        console.error("Error fetching years:", error);
+      }
+    };
+    fetchYears();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const username = localStorage.getItem("username");
-        const response = await Api.get(`/api/Trainnings/user/${username}`);
+        let url = `/api/Trainnings/user/${username}`;
+
+        // If a specific year is selected, use year filter
+        if (filtroYear !== "all") {
+          url = `/api/Trainnings/user/${username}/year/${filtroYear}`;
+        } else {
+          url = `/api/Trainnings/user/${username}`;
+        }
+
+        const response = await Api.get(url);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -26,7 +54,7 @@ const Charts = () => {
     };
 
     fetchData();
-  }, []);
+  }, [filtroYear]);
 
   // Filtrar los datos según el periodo seleccionado
   const filterDataByPeriod = (data, period) => {
@@ -214,6 +242,28 @@ const Charts = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
+      <div className="mb-4">
+        <label
+          htmlFor="year"
+          className="block text-sm font-medium text-gray-700"
+        >
+          {t("filter_by_year")}
+        </label>
+        <select
+          id="year"
+          value={filtroYear}
+          onChange={(e) => setFiltroYear(e.target.value)}
+          className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+        >
+          <option value="all">{t("all_years")}</option>
+          {availableYears.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="mb-4">
         <label
           htmlFor="chartType"
