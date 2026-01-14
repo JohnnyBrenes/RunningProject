@@ -208,6 +208,7 @@ public class TrainningService
                 Time = trainning.Time,
                 Pace = trainning.Pace,
                 Shoes = trainning.Shoes,
+                Location = trainning.Location,
                 UserId = trainning.UserId,
             };
 
