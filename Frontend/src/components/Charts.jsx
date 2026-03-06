@@ -11,7 +11,7 @@ const Charts = () => {
   const [chartType, setChartType] = useState("kms"); // Controla el tipo de gráfica
   const [period, setPeriod] = useState("mes"); // Controla el periodo de comparación
   const [filtroYear, setFiltroYear] = useState(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [availableYears, setAvailableYears] = useState([]);
   const [data, setData] = useState([]); // Datos obtenidos del backend
@@ -22,7 +22,7 @@ const Charts = () => {
       try {
         const username = localStorage.getItem("username");
         const response = await Api.get(
-          `/api/Trainnings/user/${username}/years`
+          `/api/Trainnings/user/${username}/years`,
         );
         setAvailableYears(response.data);
       } catch (error) {
@@ -64,12 +64,12 @@ const Charts = () => {
     if (period === "mes") {
       const currentMonth = now.getMonth();
       filteredData = data.filter(
-        (item) => new Date(item.date).getMonth() === currentMonth
+        (item) => new Date(item.date).getMonth() === currentMonth,
       );
     } else if (period === "trimestre") {
       const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
       filteredData = data.filter(
-        (item) => new Date(item.date) >= threeMonthsAgo
+        (item) => new Date(item.date) >= threeMonthsAgo,
       );
     } else if (period === "semestre") {
       const sixMonthsAgo = new Date(now.setMonth(now.getMonth() - 6));
@@ -103,8 +103,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     } else if (period === "semestre") {
@@ -112,8 +112,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     } else if (period === "año") {
@@ -121,8 +121,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     }
@@ -169,8 +169,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     } else if (period === "semestre") {
@@ -178,8 +178,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     } else if (period === "año") {
@@ -187,8 +187,8 @@ const Charts = () => {
         months.push(
           new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
             i18n.language,
-            { month: "long" }
-          )
+            { month: "long" },
+          ),
         );
       }
     }
@@ -245,7 +245,7 @@ const Charts = () => {
       <div className="mb-4">
         <label
           htmlFor="year"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-semibold text-gray-700"
         >
           {t("filter_by_year")}
         </label>
@@ -253,7 +253,7 @@ const Charts = () => {
           id="year"
           value={filtroYear}
           onChange={(e) => setFiltroYear(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           <option value="all">{t("all_years")}</option>
           {availableYears.map((year) => (
@@ -267,7 +267,7 @@ const Charts = () => {
       <div className="mb-4">
         <label
           htmlFor="chartType"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-semibold text-gray-700"
         >
           {t("chart_type")}
         </label>
@@ -275,7 +275,7 @@ const Charts = () => {
           id="chartType"
           value={chartType}
           onChange={(e) => setChartType(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           <option value="kms">{t("kms")}</option>
           <option value="velocities">{t("velocities")}</option>
@@ -285,7 +285,7 @@ const Charts = () => {
       <div className="mb-4">
         <label
           htmlFor="period"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-semibold text-gray-700"
         >
           {t("period")}
         </label>
@@ -293,7 +293,7 @@ const Charts = () => {
           id="period"
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           <option value="mes">{t("current_month")}</option>
           <option value="trimestre">{t("quarter")}</option>
@@ -303,7 +303,7 @@ const Charts = () => {
       </div>
 
       <div
-        className="bg-white rounded-lg shadow p-4"
+        className="bg-white rounded-xl shadow-lg p-6"
         style={{ minHeight: "350px", height: "60vh" }}
       >
         {chartType === "kms" ? (
