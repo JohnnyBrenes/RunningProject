@@ -19,9 +19,6 @@ WORKDIR /app
 # Copia los archivos publicados desde la etapa de compilación
 COPY --from=build /app/out .
 
-# Copia el archivo .env al contenedor
-COPY Backend/RunningWebApi/.env .env
-
 # Expone el puerto en el que la aplicación escucha (por defecto 80)
 EXPOSE 80
 
