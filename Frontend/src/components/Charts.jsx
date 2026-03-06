@@ -20,13 +20,15 @@ const Charts = () => {
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const username = localStorage.getItem("username");
+        const username = encodeURIComponent(
+          localStorage.getItem("username") || "",
+        );
         const response = await Api.get(
           `/api/Trainnings/user/${username}/years`,
         );
         setAvailableYears(response.data);
-      } catch (error) {
-        console.error("Error fetching years:", error);
+      } catch {
+        console.error("Error fetching years");
       }
     };
     fetchYears();
@@ -35,7 +37,9 @@ const Charts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = localStorage.getItem("username");
+        const username = encodeURIComponent(
+          localStorage.getItem("username") || "",
+        );
         let url = `/api/Trainnings/user/${username}`;
 
         // If a specific year is selected, use year filter
@@ -47,8 +51,8 @@ const Charts = () => {
 
         const response = await Api.get(url);
         setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        console.error("Error fetching data");
         setData([]); // En caso de error, establece datos vacíos
       }
     };

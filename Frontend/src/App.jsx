@@ -18,10 +18,22 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && isTokenValid(token)) {
       setIsAuthenticated(true);
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
     }
   }, []);
+
+  const isTokenValid = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");

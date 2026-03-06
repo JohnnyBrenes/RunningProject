@@ -20,13 +20,15 @@ const ViewData = () => {
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const username = localStorage.getItem("username");
+        const username = encodeURIComponent(
+          localStorage.getItem("username") || "",
+        );
         const response = await Api.get(
           `/api/Trainnings/user/${username}/years`,
         );
         setAvailableYears(response.data);
-      } catch (error) {
-        console.error("Error fetching years:", error);
+      } catch {
+        console.error("Error fetching years");
       }
     };
     fetchYears();
@@ -35,7 +37,9 @@ const ViewData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = localStorage.getItem("username");
+        const username = encodeURIComponent(
+          localStorage.getItem("username") || "",
+        );
         let url = `/api/Trainnings/user/${username}`;
 
         // If a specific year is selected, use year filter
@@ -47,8 +51,8 @@ const ViewData = () => {
 
         const response = await Api.get(url);
         setDatos(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        console.error("Error fetching data");
       }
     };
     fetchData();
@@ -119,8 +123,8 @@ const ViewData = () => {
       try {
         await Api.delete(`/api/trainnings/${id}`);
         setDatos((prevDatos) => prevDatos.filter((item) => item.id !== id));
-      } catch (error) {
-        console.error("Error al eliminar el registro:", error);
+      } catch {
+        console.error("Error al eliminar el registro");
       }
     }
   };
@@ -367,7 +371,13 @@ const ViewData = () => {
                   <td className="border p-1.5 md:p-2">{item.pace}</td>
                   <td className="border p-1.5 md:p-2">{item.shoes}</td>
                   <td className="border p-1.5 md:p-2">
-                    {item.location ? t(item.location.toLowerCase()) : "-"}
+                    {item.location
+                      ? ["treadmill", "outdoor"].includes(
+                          item.location.toLowerCase(),
+                        )
+                        ? t(item.location.toLowerCase())
+                        : item.location
+                      : "-"}
                   </td>
                   <td className="border p-1.5 md:p-2 text-center">
                     <button
