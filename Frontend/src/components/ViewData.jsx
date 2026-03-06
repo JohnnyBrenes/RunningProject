@@ -3,7 +3,7 @@ import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
 
 const ViewData = () => {
-  const { t } = useAppTranslation();
+  const { t, i18n } = useAppTranslation();
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroTenis, setFiltroTenis] = useState("");
   const [filtroLocation, setFiltroLocation] = useState("");
