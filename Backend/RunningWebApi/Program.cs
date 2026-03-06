@@ -41,7 +41,7 @@ builder
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(
+                Encoding.UTF8.GetBytes(
                     builder.Configuration["Jwt:Key"]
                         ?? throw new InvalidOperationException("JWT Key is not configured")
                 )

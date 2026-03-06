@@ -20,7 +20,7 @@ public class AuthService
     public async Task<string?> AuthenticateAsync(string username, string password)
     {
         // Buscar usuario por username
-        var user = (await _userService.GetAllAsync()).FirstOrDefault(u => u.Username == username);
+        var user = await _userService.GetByUsernameAsync(username);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
@@ -35,7 +35,7 @@ public class AuthService
         {
             throw new InvalidOperationException("JWT debe contener al menos 32 caracteres.");
         }
-        var key = Encoding.ASCII.GetBytes(jwtKey);
+        var key = Encoding.UTF8.GetBytes(jwtKey);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(

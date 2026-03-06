@@ -63,6 +63,30 @@ public class UserService
         };
     }
 
+    public async Task<UsersDto?> GetByUsernameAsync(string username)
+    {
+        _logger.LogInformation(
+            "Fetching user with Username: {Username} from Supabase...",
+            username
+        );
+        var result = await _client
+            .From<Users>()
+            .Filter("username", Operator.Equals, username)
+            .Single();
+        if (result == null)
+        {
+            _logger.LogWarning("User with Username: {Username} not found in Supabase.", username);
+            return null;
+        }
+        return new UsersDto
+        {
+            Id = result.Id,
+            Username = result.Username,
+            Email = result.Email,
+            PasswordHash = result.PasswordHash,
+        };
+    }
+
     public async Task<UsersDto> CreateAsync(UsersDto user)
     {
         _logger.LogInformation("Creating a new user in Supabase...");
