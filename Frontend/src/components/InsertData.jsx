@@ -86,8 +86,10 @@ const InsertData = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-5 rounded-md shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-5">{t("form")}</h2>
+    <div className="max-w-md mx-auto bg-white p-5 sm:p-8 rounded-xl shadow-lg">
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+        {t("form")}
+      </h2>
       {successMessage && (
         <div className="mb-4 p-3 bg-green-100 text-green-700 border border-green-400 rounded">
           {successMessage}
@@ -97,7 +99,7 @@ const InsertData = () => {
         <div className="mb-4">
           <label
             htmlFor="date"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-700 mb-1"
           >
             {t("date")}
           </label>
@@ -107,15 +109,15 @@ const InsertData = () => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           />
         </div>
         {dayOfWeek && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               {t("day_of_week")}
             </label>
-            <p className="mt-1 p-3 w-full border border-gray-300 rounded-md bg-gray-100">
+            <p className="mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
               {dayOfWeek}
             </p>
           </div>
@@ -123,7 +125,7 @@ const InsertData = () => {
         <div className="mb-4">
           <label
             htmlFor="kilometers"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-700 mb-1"
           >
             {t("kilometers_traveled")}
           </label>
@@ -133,13 +135,13 @@ const InsertData = () => {
             name="kilometers"
             value={formData.kilometers}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="time"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-700 mb-1"
           >
             {t("time")}
           </label>
@@ -149,16 +151,16 @@ const InsertData = () => {
             name="time"
             value={formData.time}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             placeholder="Ej. 50:03"
           />
         </div>
         {formData.pace && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               {t("pace")}
             </label>
-            <p className="mt-1 p-3 w-full border border-gray-300 rounded-md bg-gray-100">
+            <p className="mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
               {formData.pace} <span className="text-gray-500">min/km</span>
             </p>
           </div>
@@ -166,7 +168,7 @@ const InsertData = () => {
         <div className="mb-4">
           <label
             htmlFor="shoes"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-700 mb-1"
           >
             {t("shoes")}
           </label>
@@ -176,13 +178,13 @@ const InsertData = () => {
             name="shoes"
             value={formData.shoes}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           />
         </div>
-        <div className="mb-4">
+        <div className="mb-5">
           <label
             htmlFor="location"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-700 mb-1"
           >
             {t("location")}
           </label>
@@ -191,7 +193,7 @@ const InsertData = () => {
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="Treadmill">{t("treadmill")}</option>
             <option value="Outdoor">{t("outdoor")}</option>
@@ -199,7 +201,7 @@ const InsertData = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
         >
           {t("register_button")}
         </button>

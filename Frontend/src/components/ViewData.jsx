@@ -8,7 +8,7 @@ const ViewData = () => {
   const [filtroTenis, setFiltroTenis] = useState("");
   const [filtroLocation, setFiltroLocation] = useState("");
   const [filtroYear, setFiltroYear] = useState(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [availableYears, setAvailableYears] = useState([]);
   const [datos, setDatos] = useState([]);
@@ -22,7 +22,7 @@ const ViewData = () => {
       try {
         const username = localStorage.getItem("username");
         const response = await Api.get(
-          `/api/Trainnings/user/${username}/years`
+          `/api/Trainnings/user/${username}/years`,
         );
         setAvailableYears(response.data);
       } catch (error) {
@@ -56,7 +56,7 @@ const ViewData = () => {
 
   // Lista de meses traducidos
   const meses = Array.from({ length: 12 }, (_, i) =>
-    new Date(2000, i, 1).toLocaleString(i18n.language, { month: "long" })
+    new Date(2000, i, 1).toLocaleString(i18n.language, { month: "long" }),
   );
 
   const getMonthFromDate = (date) => {
@@ -127,7 +127,7 @@ const ViewData = () => {
 
   const totalKilometers = filteredData.reduce(
     (sum, item) => sum + item.kilometers,
-    0
+    0,
   );
   const totalTime = filteredData.reduce((sum, item) => {
     const [minutes, seconds] = item.time.split(":").map(Number);
@@ -139,7 +139,7 @@ const ViewData = () => {
     const minutes = Math.floor((totalTime % 3600) / 60);
     const seconds = totalTime % 60;
     return `${hours}:${String(minutes).padStart(2, "0")}:${String(
-      seconds
+      seconds,
     ).padStart(2, "0")}`;
   };
 
@@ -150,82 +150,91 @@ const ViewData = () => {
     const paceRemainderSeconds = Math.round(paceSeconds % 60);
     return `${paceMinutes}:${String(paceRemainderSeconds).padStart(
       2,
-      "0"
+      "0",
     )} min/km`;
   };
 
   return (
-    <div className="p-5">
-      <h2 className="text-2xl mb-4">{t("verData")}</h2>
-      <div className="flex flex-wrap gap-4 mb-6">
-        <div>
-          <div className="mb-4">
-            <label className="mr-2">{t("filter_by_year")}</label>
-            <select
-              value={filtroYear}
-              onChange={(e) => {
-                setFiltroYear(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="p-2 border rounded"
-            >
-              <option value="all">{t("all_years")}</option>
-              {availableYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="mr-2">{t("filter_by_month")}</label>
-            <select
-              value={filtroMes}
-              onChange={(e) => setFiltroMes(e.target.value)}
-              className="p-2 border rounded"
-            >
-              <option value="">{t("all_months")}</option>
-              {meses.map((mes) => (
-                <option key={mes} value={mes}>
-                  {mes}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="mr-2">{t("filter_by_shoes")}</label>
-            <select
-              value={filtroTenis}
-              onChange={(e) => setFiltroTenis(e.target.value)}
-              className="p-2 border rounded"
-            >
-              <option value="">{t("all_shoes")}</option>
-              {[...new Set(datos.map((item) => item.shoes))].map((tenis) => (
-                <option key={tenis} value={tenis}>
-                  {tenis}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="mr-2">{t("filter_by_location")}</label>
-            <select
-              value={filtroLocation}
-              onChange={(e) => setFiltroLocation(e.target.value)}
-              className="p-2 border rounded"
-            >
-              <option value="">{t("all_locations")}</option>
-              {[
-                ...new Set(datos.map((item) => item.location).filter(Boolean)),
-              ].map((location) => (
-                <option key={location} value={location}>
-                  {t(location.toLowerCase())}
-                </option>
-              ))}
-            </select>
-          </div>
+    <div className="p-3 md:p-5">
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800">
+        {t("verData")}
+      </h2>
+      {/* Filters: 2-col grid on mobile, auto-flow on desktop */}
+      <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 mb-6">
+        <div className="mb-0">
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t("filter_by_year")}
+          </label>
+          <select
+            value={filtroYear}
+            onChange={(e) => {
+              setFiltroYear(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="all">{t("all_years")}</option>
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="p-4 bg-gray-100 rounded-lg shadow">
+        <div className="mb-0">
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t("filter_by_month")}
+          </label>
+          <select
+            value={filtroMes}
+            onChange={(e) => setFiltroMes(e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="">{t("all_months")}</option>
+            {meses.map((mes) => (
+              <option key={mes} value={mes}>
+                {mes}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-0">
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t("filter_by_shoes")}
+          </label>
+          <select
+            value={filtroTenis}
+            onChange={(e) => setFiltroTenis(e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="">{t("all_shoes")}</option>
+            {[...new Set(datos.map((item) => item.shoes))].map((tenis) => (
+              <option key={tenis} value={tenis}>
+                {tenis}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-0">
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t("filter_by_location")}
+          </label>
+          <select
+            value={filtroLocation}
+            onChange={(e) => setFiltroLocation(e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="">{t("all_locations")}</option>
+            {[
+              ...new Set(datos.map((item) => item.location).filter(Boolean)),
+            ].map((location) => (
+              <option key={location} value={location}>
+                {t(location.toLowerCase())}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2 md:col-span-1 p-4 bg-gray-100 rounded-xl shadow-md">
           <h3 className="text-lg font-bold mb-2">{t("totals")}</h3>
           <p>
             <strong>{t("total_kilometers")}</strong>{" "}
@@ -240,11 +249,11 @@ const ViewData = () => {
         </div>
       </div>
       <div className="overflow-x-auto rounded-lg shadow-lg">
-        <table className="table-auto w-full">
+        <table className="table-auto w-full text-sm">
           <thead className="bg-blue-900 text-white">
             <tr>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "date" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -260,7 +269,7 @@ const ViewData = () => {
                 {sortColumn === "date" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "kilometers" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -277,7 +286,7 @@ const ViewData = () => {
                   (sortOrder === "asc" ? "▼" : "▲")}
               </th>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "time" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -293,7 +302,7 @@ const ViewData = () => {
                 {sortColumn === "time" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "pace" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -309,7 +318,7 @@ const ViewData = () => {
                 {sortColumn === "pace" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "shoes" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -325,7 +334,7 @@ const ViewData = () => {
                 {sortColumn === "shoes" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
               <th
-                className={`border p-2 cursor-pointer ${
+                className={`border p-1.5 md:p-2 cursor-pointer ${
                   sortColumn === "location" ? "bg-blue-700" : ""
                 }`}
                 onClick={() => {
@@ -340,7 +349,7 @@ const ViewData = () => {
                 {t("location_col")}{" "}
                 {sortColumn === "location" && (sortOrder === "asc" ? "▼" : "▲")}
               </th>
-              <th className="border p-2">{t("actions")}</th>
+              <th className="border p-1.5 md:p-2">{t("actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -350,18 +359,20 @@ const ViewData = () => {
                   key={item.id}
                   className={index % 2 === 0 ? "bg-gray-100" : ""}
                 >
-                  <td className="border p-2">{formatDate(item.date)}</td>
-                  <td className="border p-2">{item.kilometers}</td>
-                  <td className="border p-2">{item.time}</td>
-                  <td className="border p-2">{item.pace}</td>
-                  <td className="border p-2">{item.shoes}</td>
-                  <td className="border p-2">
+                  <td className="border p-1.5 md:p-2">
+                    {formatDate(item.date)}
+                  </td>
+                  <td className="border p-1.5 md:p-2">{item.kilometers}</td>
+                  <td className="border p-1.5 md:p-2">{item.time}</td>
+                  <td className="border p-1.5 md:p-2">{item.pace}</td>
+                  <td className="border p-1.5 md:p-2">{item.shoes}</td>
+                  <td className="border p-1.5 md:p-2">
                     {item.location ? t(item.location.toLowerCase()) : "-"}
                   </td>
-                  <td className="border p-2 text-center">
+                  <td className="border p-1.5 md:p-2 text-center">
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors"
                     >
                       {t("delete")}
                     </button>
@@ -370,7 +381,10 @@ const ViewData = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="border p-2 text-center">
+                <td
+                  colSpan="7"
+                  className="border p-2 text-center text-gray-500"
+                >
                   {t("no_data")}
                 </td>
               </tr>
@@ -385,8 +399,8 @@ const ViewData = () => {
             onClick={() => handlePageChange(index + 1)}
             className={`px-3 py-1 mx-1 rounded ${
               currentPage === index + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200"
+                ? "bg-blue-500 text-white font-semibold"
+                : "bg-gray-200 hover:bg-gray-300 transition-colors"
             }`}
           >
             {index + 1}

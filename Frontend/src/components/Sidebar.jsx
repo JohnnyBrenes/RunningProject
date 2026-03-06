@@ -1,39 +1,37 @@
 import React from "react";
 import useAppTranslation from "../utils/useAppTranslation";
 
-const Sidebar = ({ onSelectOption }) => {
-  const { t, i18n } = useAppTranslation();
+const Sidebar = ({ onSelectOption, selectedOption }) => {
+  const { t } = useAppTranslation();
+
+  const items = [
+    { key: "charts", label: t("charts") },
+    { key: "form", label: t("form") },
+    { key: "verData", label: t("verData") },
+  ];
 
   return (
-    <div>
-      <h2 className="text-xl mb-4">{t("sidebar_options")}</h2>
-      <ul>
-        <li>
-          <button
-            className="block w-full text-left p-2 hover:bg-gray-600"
-            onClick={() => onSelectOption("charts")}
-          >
-            {t("charts")}
-          </button>
-        </li>
-        <li>
-          <button
-            className="block w-full text-left p-2 hover:bg-gray-600"
-            onClick={() => onSelectOption("form")}
-          >
-            {t("form")}
-          </button>
-        </li>
-        <li>
-          <button
-            className="block w-full text-left p-2 hover:bg-gray-600"
-            onClick={() => onSelectOption("verData")}
-          >
-            {t("verData")}
-          </button>
-        </li>
+    <nav className="mt-4">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+        {t("sidebar_options")}
+      </p>
+      <ul className="space-y-1">
+        {items.map(({ key, label }) => (
+          <li key={key}>
+            <button
+              className={`block w-full text-left px-3 py-2 rounded-lg font-medium transition-colors ${
+                selectedOption === key
+                  ? "bg-gray-600 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
+              }`}
+              onClick={() => onSelectOption(key)}
+            >
+              {label}
+            </button>
+          </li>
+        ))}
       </ul>
-    </div>
+    </nav>
   );
 };
 
