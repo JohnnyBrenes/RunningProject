@@ -9,8 +9,23 @@ using RunningWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables de entorno desde el archivo .env
-Env.Load();
+// Cargar variables de entorno desde el archivo .env (solo en desarrollo local)
+if (File.Exists(".env"))
+{
+    Env.Load();
+}
+
+// Validar variables de entorno críticas al arrancar
+var requiredVars = new[] { "SUPABASE_URL", "SUPABASE_SERVICE_KEY" };
+var missingVars = requiredVars
+    .Where(v => string.IsNullOrEmpty(Environment.GetEnvironmentVariable(v)))
+    .ToList();
+if (missingVars.Count > 0)
+{
+    throw new InvalidOperationException(
+        $"Faltan variables de entorno requeridas: {string.Join(", ", missingVars)}"
+    );
+}
 
 // Configuración de JWT
 builder
@@ -37,37 +52,41 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "RunningWebApi",
-        Version = "v1"
-    });
+    c.SwaggerDoc(
+        "v1",
+        new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RunningWebApi", Version = "v1" }
+    );
 
     // Configurar el esquema de seguridad para JWT
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Ingrese el token JWT en el formato: Bearer {token}"
-    });
-
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
+    c.AddSecurityDefinition(
+        "Bearer",
+        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
+            Name = "Authorization",
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Description = "Ingrese el token JWT en el formato: Bearer {token}",
         }
-    });
+    );
+
+    c.AddSecurityRequirement(
+        new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer",
+                    },
+                },
+                Array.Empty<string>()
+            },
+        }
+    );
 });
 
 // Registrar Servicios
