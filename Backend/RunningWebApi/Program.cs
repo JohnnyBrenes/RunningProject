@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using RunningWebApi.Services;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,42 +51,42 @@ builder
 
 // Agregar servicios al contenedor
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddOpenApi(options =>
 {
-    c.SwaggerDoc(
-        "v1",
-        new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RunningWebApi", Version = "v1" }
-    );
-
-    // Configurar el esquema de seguridad para JWT
-    c.AddSecurityDefinition(
-        "Bearer",
-        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddDocumentTransformer(
+        (document, context, ct) =>
         {
-            Name = "Authorization",
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-            Scheme = "Bearer",
-            BearerFormat = "JWT",
-            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-            Description = "Ingrese el token JWT en el formato: Bearer {token}",
-        }
-    );
-
-    c.AddSecurityRequirement(
-        new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-        {
-            {
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            document.Info = new OpenApiInfo { Title = "RunningWebApi", Version = "v1" };
+            document.Components ??= new OpenApiComponents();
+            document.Components.SecuritySchemes.Add(
+                "Bearer",
+                new OpenApiSecurityScheme
                 {
-                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                    {
-                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                        Id = "Bearer",
-                    },
-                },
-                Array.Empty<string>()
-            },
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Ingrese el token JWT en el formato: Bearer {token}",
+                }
+            );
+            foreach (var path in document.Paths.Values)
+            {
+                foreach (var operation in path.Operations.Values)
+                {
+                    operation.Security ??= [];
+                    operation.Security.Add(
+                        new OpenApiSecurityRequirement
+                        {
+                            {
+                                new OpenApiSecuritySchemeReference("Bearer", document, null),
+                                new List<string>()
+                            },
+                        }
+                    );
+                }
+            }
+            return Task.CompletedTask;
         }
     );
 });
@@ -126,13 +128,9 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-// Habilitar Swagger en todos los entornos
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "RunningWebApi v1");
-    c.RoutePrefix = string.Empty; // Hace que Swagger esté disponible en la raíz (http://localhost:5000/)
-});
+// Habilitar OpenAPI/Scalar en todos los entornos
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 // Configurar el pipeline de middleware
 if (app.Environment.IsDevelopment())
