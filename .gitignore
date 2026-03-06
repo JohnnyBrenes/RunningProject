@@ -6,4 +6,5 @@
 
 Backend/RunningWebApi/appsettings.Development.json
 Backend/.env
+Backend/RunningWebApi/.env
 
