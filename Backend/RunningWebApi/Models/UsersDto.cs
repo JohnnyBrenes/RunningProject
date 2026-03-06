@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RunningWebApi.Models;
 
 public class UsersDto
@@ -5,5 +7,7 @@ public class UsersDto
     public Guid Id { get; set; }
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+
+    [JsonIgnore]
     public string PasswordHash { get; set; } = string.Empty;
 }
