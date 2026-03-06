@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Api from "../utils/Api";
 
 const Register = ({ onRegisterSuccess }) => {

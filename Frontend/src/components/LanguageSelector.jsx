@@ -1,4 +1,3 @@
-import React from "react";
 import useAppTranslation from "../utils/useAppTranslation";
 
 const LanguageSelector = ({

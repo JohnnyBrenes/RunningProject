@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Sidebar from "./components/Sidebar";
@@ -14,7 +14,7 @@ const App = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [selectedOption, setSelectedOption] = useState("charts");
 
-  const { t, i18n } = useAppTranslation();
+  const { t } = useAppTranslation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");

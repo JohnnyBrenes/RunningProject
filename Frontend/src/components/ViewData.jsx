@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
 
 const ViewData = () => {
-  const { t, i18n } = useAppTranslation();
+  const { t } = useAppTranslation();
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroTenis, setFiltroTenis] = useState("");
   const [filtroLocation, setFiltroLocation] = useState("");
