@@ -68,6 +68,7 @@ const Register = ({ onRegisterSuccess }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                autoComplete="username"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>
@@ -84,6 +85,7 @@ const Register = ({ onRegisterSuccess }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                autoComplete="email"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>
@@ -100,6 +102,7 @@ const Register = ({ onRegisterSuccess }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                autoComplete="new-password"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>

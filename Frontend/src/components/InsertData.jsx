@@ -14,6 +14,7 @@ const InsertData = () => {
   });
   const [dayOfWeek, setDayOfWeek] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,19 +24,21 @@ const InsertData = () => {
       calculateAveragePace({ ...formData, [name]: value });
     }
 
-    if (name === "date") {
+    if (name === "date" && value) {
       const date = new Date(value);
-      // Usar claves traducidas para los días
-      const days = [
-        t("monday"),
-        t("tuesday"),
-        t("wednesday"),
-        t("thursday"),
-        t("friday"),
-        t("saturday"),
-        t("sunday"),
-      ];
-      setDayOfWeek(days[date.getDay()]);
+      if (!isNaN(date.getTime())) {
+        // Usar claves traducidas para los días
+        const days = [
+          t("monday"),
+          t("tuesday"),
+          t("wednesday"),
+          t("thursday"),
+          t("friday"),
+          t("saturday"),
+          t("sunday"),
+        ];
+        setDayOfWeek(days[date.getDay()]);
+      }
     }
   };
 
@@ -61,8 +64,22 @@ const InsertData = () => {
     }
   };
 
+  const validateForm = () => {
+    if (!formData.date) return t("error_required_date") || "Fecha requerida";
+    if (!formData.kilometers || parseFloat(formData.kilometers) <= 0)
+      return t("error_invalid_km") || "Kilometraje debe ser mayor a 0";
+    if (!formData.time || !/^\d+:\d{2}$/.test(formData.time))
+      return t("error_invalid_time") || "Tiempo inválido (formato: MM:SS)";
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
     try {
       const username = localStorage.getItem("username");
       const dataToSend = {
@@ -71,6 +88,7 @@ const InsertData = () => {
       };
       await Api.post("/api/trainnings", dataToSend);
       setSuccessMessage(t("success_data"));
+      setErrorMessage("");
       setFormData({
         date: "",
         kilometers: "",
@@ -80,8 +98,8 @@ const InsertData = () => {
         location: "Treadmill",
       });
       setDayOfWeek("");
-    } catch (error) {
-      console.error("Error enviando información:", error);
+    } catch {
+      setErrorMessage(t("error_sending_data") || "Error al enviar los datos");
     }
   };
 
@@ -93,6 +111,11 @@ const InsertData = () => {
       {successMessage && (
         <div className="mb-4 p-3 bg-green-100 text-green-700 border border-green-400 rounded">
           {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-400 rounded">
+          {errorMessage}
         </div>
       )}
       <form onSubmit={handleSubmit}>
