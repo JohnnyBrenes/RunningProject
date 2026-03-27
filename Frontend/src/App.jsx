@@ -8,6 +8,7 @@ import ViewData from "./components/ViewData";
 import "./i18n"; // Importar configuración de i18n
 import useAppTranslation from "./utils/useAppTranslation";
 import LanguageSelector from "./components/LanguageSelector";
+import Api from "./utils/Api";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +18,9 @@ const App = () => {
   const { t } = useAppTranslation();
 
   useEffect(() => {
+    // Ping al backend para despertar el servidor (Koyeb free tier duerme por inactividad)
+    Api.get("/health").catch(() => {});
+
     const token = localStorage.getItem("token");
     if (token && isTokenValid(token)) {
       setIsAuthenticated(true);

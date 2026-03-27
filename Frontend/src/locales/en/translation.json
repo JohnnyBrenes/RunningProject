@@ -11,6 +11,7 @@
   "verData": "View Data",
   "processing": "Processing...",
   "invalid_credentials": "Invalid credentials. Please try again.",
+  "server_starting": "The server is starting up. Please try again in a few seconds.",
   "sidebar_options": "Options",
   "register_account": "Create Account",
   "email": "Email",

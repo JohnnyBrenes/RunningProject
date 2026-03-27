@@ -32,7 +32,11 @@ const Login = ({ onLoginSuccess }) => {
 
       setErrorMessage("");
     } catch (error) {
-      setErrorMessage(t("invalid_credentials"));
+      if (error.response?.status === 401) {
+        setErrorMessage(t("invalid_credentials"));
+      } else {
+        setErrorMessage(t("server_starting"));
+      }
     } finally {
       setIsLoading(false); // Desactiva el estado de carga
     }
