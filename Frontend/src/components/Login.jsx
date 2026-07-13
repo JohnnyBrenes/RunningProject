@@ -3,7 +3,7 @@ import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
 import LanguageSelector from "./LanguageSelector";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar el spinner y deshabilitar campos
@@ -113,6 +113,16 @@ const Login = ({ onLoginSuccess }) => {
               </div>
             )}
           </form>
+          <p className="text-center text-sm text-gray-500 mt-6">
+            {t("no_account")}{" "}
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-indigo-600 font-semibold hover:underline"
+            >
+              {t("register")}
+            </button>
+          </p>
         </div>
       </div>
       <p className="text-gray-400 text-xs mt-6">Por: Johnny Brenes</p>

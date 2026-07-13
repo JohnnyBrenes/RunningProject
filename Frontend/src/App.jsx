@@ -48,7 +48,10 @@ const App = () => {
 
   if (!isAuthenticated) {
     return isRegistering ? (
-      <Register onRegisterSuccess={() => setIsRegistering(false)} />
+      <Register
+        onRegisterSuccess={() => setIsRegistering(false)}
+        onSwitchToLogin={() => setIsRegistering(false)}
+      />
     ) : (
       <Login
         onLoginSuccess={() => setIsAuthenticated(true)}

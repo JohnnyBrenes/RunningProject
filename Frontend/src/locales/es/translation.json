@@ -86,5 +86,8 @@
   "total_sessions": "Sesiones totales",
   "register_button": "Registrar",
   "success_message": "Operación completada exitosamente.",
-  "error_message": "Ocurrió un error. Intente nuevamente."
+  "error_message": "Ocurrió un error. Intente nuevamente.",
+  "no_account": "¿No tienes una cuenta?",
+  "has_account": "¿Ya tienes una cuenta?",
+  "user_or_email_taken": "El usuario o correo ya está en uso."
 }

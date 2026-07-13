@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Footprints } from "lucide-react";
 import Api from "../utils/Api";
+import useAppTranslation from "../utils/useAppTranslation";
 
-const Register = ({ onRegisterSuccess }) => {
+const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -10,6 +10,9 @@ const Register = ({ onRegisterSuccess }) => {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { t } = useAppTranslation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,17 +21,25 @@ const Register = ({ onRegisterSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage("");
     try {
-      await Api.post("/api/users", formData);
-      setSuccessMessage("Usuario registrado exitosamente.");
+      await Api.post("/api/auth/register", formData);
+      setSuccessMessage(t("success_register"));
       setErrorMessage("");
       setFormData({ username: "", email: "", password: "" });
 
       // Notificar al componente padre que el registro fue exitoso
       onRegisterSuccess();
     } catch (error) {
-      setErrorMessage("Error al registrar usuario. Intente nuevamente.");
+      if (error.response?.status === 409) {
+        setErrorMessage(t("user_or_email_taken"));
+      } else {
+        setErrorMessage(t("error_register"));
+      }
       setSuccessMessage("");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -37,13 +48,17 @@ const Register = ({ onRegisterSuccess }) => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header band */}
         <div className="bg-gray-800 text-white px-8 py-6 text-center">
-          <Footprints className="w-10 h-10 mx-auto mb-2" />
+          <img
+            src="/icon.svg"
+            alt="Running Tracker"
+            className="w-10 h-10 mx-auto mb-2"
+          />
           <h1 className="text-xl font-bold tracking-tight">Running Tracker</h1>
         </div>
         {/* Form area */}
         <div className="p-5 sm:p-8">
           <h2 className="text-xl font-bold text-center mb-6 text-gray-800">
-            Crear Cuenta
+            {t("register_account")}
           </h2>
           {successMessage && (
             <div className="mb-4 p-3 bg-green-100 text-green-700 border border-green-400 rounded">
@@ -61,7 +76,7 @@ const Register = ({ onRegisterSuccess }) => {
                 htmlFor="username"
                 className="block text-sm font-semibold text-gray-700 mb-1"
               >
-                Usuario
+                {t("username")}
               </label>
               <input
                 type="text"
@@ -71,6 +86,7 @@ const Register = ({ onRegisterSuccess }) => {
                 onChange={handleChange}
                 autoComplete="username"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                disabled={isLoading}
               />
             </div>
             <div className="mb-4">
@@ -78,7 +94,7 @@ const Register = ({ onRegisterSuccess }) => {
                 htmlFor="email"
                 className="block text-sm font-semibold text-gray-700 mb-1"
               >
-                Correo Electrónico
+                {t("email")}
               </label>
               <input
                 type="email"
@@ -88,6 +104,7 @@ const Register = ({ onRegisterSuccess }) => {
                 onChange={handleChange}
                 autoComplete="email"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                disabled={isLoading}
               />
             </div>
             <div className="mb-5">
@@ -95,7 +112,7 @@ const Register = ({ onRegisterSuccess }) => {
                 htmlFor="password"
                 className="block text-sm font-semibold text-gray-700 mb-1"
               >
-                Contraseña
+                {t("password")}
               </label>
               <input
                 type="password"
@@ -105,15 +122,34 @@ const Register = ({ onRegisterSuccess }) => {
                 onChange={handleChange}
                 autoComplete="new-password"
                 className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors"
+              className={`w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
             >
-              Registrarse
+              {isLoading ? t("processing") : t("register_button")}
             </button>
+            {isLoading && (
+              <div className="flex justify-center mt-4">
+                <div className="loader border-t-4 border-indigo-500 rounded-full w-6 h-6 animate-spin"></div>
+              </div>
+            )}
           </form>
+          <p className="text-center text-sm text-gray-500 mt-6">
+            {t("has_account")}{" "}
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="text-indigo-600 font-semibold hover:underline"
+            >
+              {t("login")}
+            </button>
+          </p>
         </div>
       </div>
     </div>
