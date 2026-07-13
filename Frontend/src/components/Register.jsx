@@ -21,8 +21,14 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMessage("");
+
+    if (formData.password.length < 6) {
+      setErrorMessage(t("password_min_length"));
+      return;
+    }
+
+    setIsLoading(true);
     try {
       await Api.post("/api/auth/register", formData);
       setSuccessMessage(t("success_register"));
@@ -34,6 +40,8 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
     } catch (error) {
       if (error.response?.status === 409) {
         setErrorMessage(t("user_or_email_taken"));
+      } else if (error.response?.status === 400 && error.response.data?.errors) {
+        setErrorMessage(Object.values(error.response.data.errors).flat().join(" "));
       } else {
         setErrorMessage(t("error_register"));
       }

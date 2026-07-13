@@ -89,5 +89,6 @@
   "error_message": "An error occurred. Please try again.",
   "no_account": "Don't have an account?",
   "has_account": "Already have an account?",
-  "user_or_email_taken": "Username or email is already taken."
+  "user_or_email_taken": "Username or email is already taken.",
+  "password_min_length": "Password must be at least 6 characters."
 }

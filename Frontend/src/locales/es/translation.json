@@ -89,5 +89,6 @@
   "error_message": "Ocurrió un error. Intente nuevamente.",
   "no_account": "¿No tienes una cuenta?",
   "has_account": "¿Ya tienes una cuenta?",
-  "user_or_email_taken": "El usuario o correo ya está en uso."
+  "user_or_email_taken": "El usuario o correo ya está en uso.",
+  "password_min_length": "La contraseña debe tener al menos 6 caracteres."
 }
