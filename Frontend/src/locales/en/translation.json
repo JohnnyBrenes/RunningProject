@@ -50,6 +50,8 @@
   "average_pace": "Average Pace:",
   "actions": "Actions",
   "delete": "Delete",
+  "cancel": "Cancel",
+  "export_excel": "Export to Excel",
   "confirm_delete": "Are you sure you want to delete this record?",
   "no_data": "No data available",
   "date_col": "Date",

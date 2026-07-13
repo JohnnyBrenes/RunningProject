@@ -43,11 +43,11 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header band */}
         <div className="bg-gray-800 text-white px-8 py-6 text-center">
-          <div className="text-4xl mb-2">🏃</div>
+          <img src="/icon.svg" alt="Running Tracker" className="w-10 h-10 mx-auto mb-2" />
           <h1 className="text-xl font-bold tracking-tight">Running Tracker</h1>
         </div>
         {/* Form area */}
@@ -75,7 +75,7 @@ const Login = ({ onLoginSuccess }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 autoComplete="username"
                 disabled={isLoading}
               />
@@ -93,14 +93,14 @@ const Login = ({ onLoginSuccess }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 autoComplete="current-password"
                 disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className={`w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors ${
+              className={`w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isLoading}
@@ -109,12 +109,13 @@ const Login = ({ onLoginSuccess }) => {
             </button>
             {isLoading && (
               <div className="flex justify-center mt-4">
-                <div className="loader border-t-4 border-blue-500 rounded-full w-6 h-6 animate-spin"></div>
+                <div className="loader border-t-4 border-indigo-500 rounded-full w-6 h-6 animate-spin"></div>
               </div>
             )}
           </form>
         </div>
       </div>
+      <p className="text-gray-400 text-xs mt-6">Por: Johnny Brenes</p>
     </div>
   );
 };

@@ -14,6 +14,7 @@ const StatCard = ({ label, value, sub }) => (
 
 const Dashboard = () => {
   const [allData, setAllData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { t } = useAppTranslation();
 
   useEffect(() => {
@@ -26,6 +27,8 @@ const Dashboard = () => {
         setAllData(response.data);
       } catch {
         setAllData([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -91,6 +94,23 @@ const Dashboard = () => {
           0,
         ) / paceEntries.length
       : 0;
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="h-7 bg-gray-200 rounded w-32 mb-6 animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl shadow-lg p-5 animate-pulse flex flex-col gap-2">
+              <div className="h-3 bg-gray-200 rounded w-2/3" />
+              <div className="h-8 bg-gray-200 rounded w-1/2" />
+              <div className="h-3 bg-gray-200 rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto">

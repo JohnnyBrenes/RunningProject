@@ -63,7 +63,7 @@ const App = () => {
       <div className="hidden md:flex md:flex-col md:w-64 bg-gray-800 text-white shadow-xl">
         <div className="p-5 border-b border-gray-700">
           <h1 className="text-lg font-bold tracking-tight">
-            🏃 Running Tracker
+            <img src="/icon.svg" alt="" className="inline-block w-5 h-5 mr-2 -mt-0.5" /> Running Tracker
           </h1>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
@@ -84,12 +84,12 @@ const App = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile controls */}
         <div className="md:hidden bg-gray-800 text-white">
           {/* Row 1: title + logout */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-            <span className="font-bold tracking-tight">🏃 Running Tracker</span>
+            <span className="font-bold tracking-tight"><img src="/icon.svg" alt="" className="inline-block w-5 h-5 mr-2 -mt-0.5" /> Running Tracker</span>
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg font-medium hover:bg-red-600 transition-colors"
@@ -112,12 +112,15 @@ const App = () => {
             <LanguageSelector id="language-mobile" compact />
           </div>
         </div>
-        <div className="p-4 md:p-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           {selectedOption === "dashboard" && <Dashboard />}
           {selectedOption === "charts" && <Charts />}
           {selectedOption === "form" && <InsertData />}
           {selectedOption === "verData" && <ViewData />}
         </div>
+        <footer className="shrink-0 text-center text-gray-400 text-xs py-3 border-t border-gray-200">
+          Por: Johnny Brenes
+        </footer>
       </div>
     </div>
   );

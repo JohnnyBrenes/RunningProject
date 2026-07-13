@@ -50,6 +50,8 @@
   "average_pace": "Ritmo Promedio:",
   "actions": "Acciones",
   "delete": "Borrar",
+  "cancel": "Cancelar",
+  "export_excel": "Exportar a Excel",
   "confirm_delete": "¿Está seguro de que desea borrar este registro?",
   "no_data": "No hay datos disponibles",
   "date_col": "Fecha",

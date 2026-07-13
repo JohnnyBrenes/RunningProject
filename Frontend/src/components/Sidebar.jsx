@@ -21,7 +21,7 @@ const Sidebar = ({ onSelectOption, selectedOption }) => {
             <button
               className={`block w-full text-left px-3 py-2 rounded-lg font-medium transition-colors ${
                 selectedOption === key
-                  ? "bg-gray-600 text-white"
+                  ? "bg-indigo-600 text-white"
                   : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => onSelectOption(key)}

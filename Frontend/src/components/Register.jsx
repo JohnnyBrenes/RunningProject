@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Footprints } from "lucide-react";
 import Api from "../utils/Api";
 
 const Register = ({ onRegisterSuccess }) => {
@@ -36,7 +37,7 @@ const Register = ({ onRegisterSuccess }) => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header band */}
         <div className="bg-gray-800 text-white px-8 py-6 text-center">
-          <div className="text-4xl mb-2">🏃</div>
+          <Footprints className="w-10 h-10 mx-auto mb-2" />
           <h1 className="text-xl font-bold tracking-tight">Running Tracker</h1>
         </div>
         {/* Form area */}
@@ -69,7 +70,7 @@ const Register = ({ onRegisterSuccess }) => {
                 value={formData.username}
                 onChange={handleChange}
                 autoComplete="username"
-                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
             </div>
             <div className="mb-4">
@@ -86,7 +87,7 @@ const Register = ({ onRegisterSuccess }) => {
                 value={formData.email}
                 onChange={handleChange}
                 autoComplete="email"
-                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
             </div>
             <div className="mb-5">
@@ -103,12 +104,12 @@ const Register = ({ onRegisterSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 autoComplete="new-password"
-                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+              className="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors"
             >
               Registrarse
             </button>

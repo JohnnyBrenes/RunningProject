@@ -17,6 +17,7 @@ const Charts = () => {
   const [availableYears, setAvailableYears] = useState([]);
   const [topShoes, setTopShoes] = useState(10);
   const [data, setData] = useState([]); // Datos obtenidos del backend
+  const [isLoading, setIsLoading] = useState(true);
   const { t, i18n } = useAppTranslation();
 
   useEffect(() => {
@@ -55,7 +56,9 @@ const Charts = () => {
         setData(response.data);
       } catch {
         console.error("Error fetching data");
-        setData([]); // En caso de error, establece datos vacíos
+        setData([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -463,7 +466,7 @@ const Charts = () => {
           id="year"
           value={filtroYear}
           onChange={(e) => setFiltroYear(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
         >
           <option value="all">{t("all_years")}</option>
           {availableYears.map((year) => (
@@ -485,7 +488,7 @@ const Charts = () => {
           id="chartType"
           value={chartType}
           onChange={(e) => setChartType(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
         >
           <option value="kms">{t("kms")}</option>
           <option value="velocities">{t("velocities")}</option>
@@ -511,7 +514,7 @@ const Charts = () => {
                 e.target.value === "all" ? "all" : Number(e.target.value),
               )
             }
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
@@ -532,7 +535,7 @@ const Charts = () => {
           id="period"
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
-          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
         >
           <option value="mes">{t("current_month")}</option>
           <option value="trimestre">{t("quarter")}</option>
@@ -545,7 +548,17 @@ const Charts = () => {
         className="bg-white rounded-xl shadow-lg p-6"
         style={{ minHeight: "350px", height: "60vh" }}
       >
-        {dataForChart.labels.length === 0 ||
+        {isLoading ? (
+          <div className="h-full w-full animate-pulse flex flex-col gap-3 justify-end">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-gray-200 rounded w-full"
+                style={{ height: `${(i + 1) * 12}%` }}
+              />
+            ))}
+          </div>
+        ) : dataForChart.labels.length === 0 ||
         dataForChart.datasets[0].data.every((v) => v === 0) ? (
           <div className="flex justify-center items-center h-full">
             <p className="text-gray-400 text-sm">{t("no_data")}</p>

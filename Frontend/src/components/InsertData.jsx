@@ -132,7 +132,7 @@ const InsertData = () => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
         {dayOfWeek && (
@@ -158,7 +158,7 @@ const InsertData = () => {
             name="kilometers"
             value={formData.kilometers}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
         <div className="mb-4">
@@ -174,7 +174,7 @@ const InsertData = () => {
             name="time"
             value={formData.time}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             placeholder="Ej. 50:03"
           />
         </div>
@@ -201,7 +201,7 @@ const InsertData = () => {
             name="shoes"
             value={formData.shoes}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
         <div className="mb-5">
@@ -216,7 +216,7 @@ const InsertData = () => {
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           >
             <option value="Treadmill">{t("treadmill")}</option>
             <option value="Outdoor">{t("outdoor")}</option>
@@ -224,7 +224,7 @@ const InsertData = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+          className="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors"
         >
           {t("register_button")}
         </button>
