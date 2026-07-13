@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
 
 // Registrar todos los elementos de Chart.js
-ChartJS.register(...registerables);
+ChartJS.register(...registerables, ChartDataLabels);
 
 const Charts = () => {
   const [chartType, setChartType] = useState("kms"); // Controla el tipo de gráfica
@@ -330,32 +331,42 @@ const Charts = () => {
 
   // Agrupar los datos por ubicación (kilómetros acumulados)
   const groupDataByLocation = (data) => {
+    const colorMap = {
+      outdoor: { bg: "rgba(34, 197, 94, 0.8)", border: "rgba(34, 197, 94, 1)" },
+      treadmill: { bg: "rgba(249, 115, 22, 0.8)", border: "rgba(249, 115, 22, 1)" },
+    };
+    const fallbackColors = [
+      { bg: "rgba(59, 130, 246, 0.8)", border: "rgba(59, 130, 246, 1)" },
+      { bg: "rgba(168, 85, 247, 0.8)", border: "rgba(168, 85, 247, 1)" },
+    ];
+    let fallbackIndex = 0;
+
     const grouped = data.reduce((acc, item) => {
       const loc = item.location || "Unknown";
       acc[loc] = (acc[loc] || 0) + item.kilometers;
       return acc;
     }, {});
 
+    const locations = Object.keys(grouped);
+    const bgColors = locations.map((loc) => {
+      const key = loc.toLowerCase();
+      return colorMap[key]?.bg ?? fallbackColors[fallbackIndex++ % fallbackColors.length].bg;
+    });
+    const borderColors = locations.map((loc) => {
+      const key = loc.toLowerCase();
+      return colorMap[key]?.border ?? fallbackColors[fallbackIndex++ % fallbackColors.length].border;
+    });
+
     return {
-      labels: Object.keys(grouped).map((loc) =>
+      labels: locations.map((loc) =>
         t(loc.toLowerCase(), { defaultValue: loc }),
       ),
       datasets: [
         {
           label: t("location_km_chart"),
           data: Object.values(grouped),
-          backgroundColor: [
-            "rgba(54, 162, 235, 0.7)",
-            "rgba(75, 192, 192, 0.7)",
-            "rgba(255, 205, 86, 0.7)",
-            "rgba(153, 102, 255, 0.7)",
-          ],
-          borderColor: [
-            "rgba(54, 162, 235, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(255, 205, 86, 1)",
-            "rgba(153, 102, 255, 1)",
-          ],
+          backgroundColor: bgColors,
+          borderColor: borderColors,
           borderWidth: 1,
         },
       ],
@@ -374,11 +385,32 @@ const Charts = () => {
             ? groupDataByWeek(filteredData, period)
             : groupDataByLocation(filteredData);
 
-  const options = {
+  const barOptions = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
+      legend: { position: "top" },
+      datalabels: {
+        display: (context) => context.dataset.data[context.dataIndex] > 0,
+        color: "#fff",
+        font: { size: 11, weight: "bold" },
+        anchor: "center",
+        align: "center",
+        formatter: (value) => value.toFixed(1),
+      },
+    },
+  };
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: "top" },
+      datalabels: {
+        display: (context) => context.dataset.data[context.dataIndex] > 0,
+        color: "#374151",
+        font: { size: 11 },
+        anchor: "end",
+        align: "top",
+        formatter: (value) => value.toFixed(1),
       },
     },
   };
@@ -387,8 +419,17 @@ const Charts = () => {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
-      legend: {
-        position: "top",
+      legend: { position: "top" },
+      datalabels: {
+        color: "#fff",
+        font: { weight: "bold", size: 13 },
+        anchor: "center",
+        align: "center",
+        formatter: (value, context) => {
+          const total = context.dataset.data.reduce((a, b) => a + b, 0);
+          const pct = ((value / total) * 100).toFixed(1);
+          return `${pct}%\n${value.toFixed(1)} km`;
+        },
       },
     },
   };
@@ -397,8 +438,14 @@ const Charts = () => {
     indexAxis: "y",
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
+      legend: { position: "top" },
+      datalabels: {
+        display: (context) => context.dataset.data[context.dataIndex] > 0,
+        color: "#fff",
+        font: { size: 11, weight: "bold" },
+        anchor: "center",
+        align: "center",
+        formatter: (value) => value.toFixed(1),
       },
     },
   };
@@ -498,14 +545,19 @@ const Charts = () => {
         className="bg-white rounded-xl shadow-lg p-6"
         style={{ minHeight: "350px", height: "60vh" }}
       >
-        {chartType === "kms" ? (
-          <Bar data={dataForChart} options={options} />
+        {dataForChart.labels.length === 0 ||
+        dataForChart.datasets[0].data.every((v) => v === 0) ? (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-400 text-sm">{t("no_data")}</p>
+          </div>
+        ) : chartType === "kms" ? (
+          <Bar data={dataForChart} options={barOptions} />
         ) : chartType === "velocities" ? (
-          <Line data={dataForChart} options={options} />
+          <Line data={dataForChart} options={lineOptions} />
         ) : chartType === "shoes" ? (
           <Bar data={dataForChart} options={shoesOptions} />
         ) : chartType === "weekly" ? (
-          <Line data={dataForChart} options={options} />
+          <Line data={dataForChart} options={lineOptions} />
         ) : (
           <div className="flex justify-center items-center h-full">
             <div className="w-full max-w-sm">
