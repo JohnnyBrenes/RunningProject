@@ -27,4 +27,21 @@ public class AuthController : ControllerBase
 
         return Ok(new { token });
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    {
+        var success = await _authService.RegisterAsync(
+            request.Username,
+            request.Email,
+            request.Password
+        );
+
+        if (!success)
+        {
+            return Conflict(new { message = "El usuario o correo ya está en uso." });
+        }
+
+        return Ok(new { message = "Usuario registrado exitosamente." });
+    }
 }

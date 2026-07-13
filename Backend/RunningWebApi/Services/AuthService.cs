@@ -55,4 +55,30 @@ public class AuthService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
+    public async Task<bool> RegisterAsync(string username, string email, string password)
+    {
+        if (await _userService.GetByUsernameAsync(username) != null)
+        {
+            return false;
+        }
+
+        if (await _userService.GetByEmailAsync(email) != null)
+        {
+            return false;
+        }
+
+        // UserService.CreateAsync hashea PasswordHash internamente antes de guardarlo,
+        // por eso aquí se le pasa la contraseña en texto plano en ese campo.
+        await _userService.CreateAsync(
+            new UsersDto
+            {
+                Username = username,
+                Email = email,
+                PasswordHash = password,
+            }
+        );
+
+        return true;
+    }
 }

@@ -18,11 +18,7 @@ public class SupabaseClientService
             throw new InvalidOperationException("Supabase URL and Service Key must be provided.");
         }
 
-        var options = new SupabaseOptions
-        {
-            AutoRefreshToken = false,
-            AutoConnectRealtime = false,
-        };
+        var options = new SupabaseOptions { AutoRefreshToken = false, AutoConnectRealtime = false };
 
         _client = new Supabase.Client(url, key, options);
     }

@@ -87,6 +87,24 @@ public class UserService
         };
     }
 
+    public async Task<UsersDto?> GetByEmailAsync(string email)
+    {
+        _logger.LogInformation("Fetching user with Email: {Email} from Supabase...", email);
+        var result = await _client.From<Users>().Filter("email", Operator.Equals, email).Single();
+        if (result == null)
+        {
+            _logger.LogWarning("User with Email: {Email} not found in Supabase.", email);
+            return null;
+        }
+        return new UsersDto
+        {
+            Id = result.Id,
+            Username = result.Username,
+            Email = result.Email,
+            PasswordHash = result.PasswordHash,
+        };
+    }
+
     public async Task<UsersDto> CreateAsync(UsersDto user)
     {
         _logger.LogInformation("Creating a new user in Supabase...");
