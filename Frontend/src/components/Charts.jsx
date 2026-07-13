@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
 import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
@@ -14,6 +14,7 @@ const Charts = () => {
     new Date().getFullYear().toString(),
   );
   const [availableYears, setAvailableYears] = useState([]);
+  const [topShoes, setTopShoes] = useState(10);
   const [data, setData] = useState([]); // Datos obtenidos del backend
   const { t, i18n } = useAppTranslation();
 
@@ -229,13 +230,171 @@ const Charts = () => {
     };
   };
 
+  // Agrupar los datos por zapatilla (kilómetros acumulados)
+  const groupDataByShoes = (data) => {
+    const grouped = data.reduce((acc, item) => {
+      const shoe = item.shoes || "Unknown";
+      acc[shoe] = (acc[shoe] || 0) + item.kilometers;
+      return acc;
+    }, {});
+
+    const sorted = Object.entries(grouped).sort(([, a], [, b]) => b - a);
+    const limited = topShoes === "all" ? sorted : sorted.slice(0, topShoes);
+
+    const colors = [
+      "rgba(255, 159, 64, 0.7)",
+      "rgba(54, 162, 235, 0.7)",
+      "rgba(153, 102, 255, 0.7)",
+      "rgba(75, 192, 192, 0.7)",
+      "rgba(255, 205, 86, 0.7)",
+      "rgba(255, 99, 132, 0.7)",
+    ];
+    const borderColors = colors.map((c) => c.replace("0.7", "1"));
+
+    return {
+      labels: limited.map(([shoe]) => shoe),
+      datasets: [
+        {
+          label: t("shoes_km_chart"),
+          data: limited.map(([, km]) => km),
+          backgroundColor: colors.slice(0, limited.length),
+          borderColor: borderColors.slice(0, limited.length),
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  // Agrupar los datos por semana (kilómetros acumulados)
+  const groupDataByWeek = (data, period) => {
+    const now = new Date();
+
+    const getWeekMonday = (date) => {
+      const d = new Date(date);
+      const day = d.getDay();
+      d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
+
+    let startDate = new Date(now);
+    if (period === "mes") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (period === "trimestre") {
+      startDate.setMonth(startDate.getMonth() - 3);
+    } else if (period === "semestre") {
+      startDate.setMonth(startDate.getMonth() - 6);
+    } else if (period === "año") {
+      startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    const weeks = [];
+    let current = getWeekMonday(startDate);
+    const end = getWeekMonday(now);
+    while (current <= end) {
+      weeks.push(new Date(current));
+      current = new Date(current);
+      current.setDate(current.getDate() + 7);
+    }
+
+    const grouped = data.reduce((acc, item) => {
+      const key = getWeekMonday(new Date(item.date))
+        .toISOString()
+        .split("T")[0];
+      acc[key] = (acc[key] || 0) + item.kilometers;
+      return acc;
+    }, {});
+
+    return {
+      labels: weeks.map((w) =>
+        w.toLocaleDateString(i18n.language, {
+          month: "short",
+          day: "numeric",
+        }),
+      ),
+      datasets: [
+        {
+          label: t("kms_per_week"),
+          data: weeks.map(
+            (w) => grouped[w.toISOString().split("T")[0]] || 0,
+          ),
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    };
+  };
+
+  // Agrupar los datos por ubicación (kilómetros acumulados)
+  const groupDataByLocation = (data) => {
+    const grouped = data.reduce((acc, item) => {
+      const loc = item.location || "Unknown";
+      acc[loc] = (acc[loc] || 0) + item.kilometers;
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(grouped).map((loc) =>
+        t(loc.toLowerCase(), { defaultValue: loc }),
+      ),
+      datasets: [
+        {
+          label: t("location_km_chart"),
+          data: Object.values(grouped),
+          backgroundColor: [
+            "rgba(54, 162, 235, 0.7)",
+            "rgba(75, 192, 192, 0.7)",
+            "rgba(255, 205, 86, 0.7)",
+            "rgba(153, 102, 255, 0.7)",
+          ],
+          borderColor: [
+            "rgba(54, 162, 235, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(255, 205, 86, 1)",
+            "rgba(153, 102, 255, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
   // Preparar los datos para la gráfica seleccionada
   const dataForChart =
     chartType === "kms"
       ? groupDataByMonthForKms(filteredData, period)
-      : groupDataByMonthForSpeed(filteredData, period);
+      : chartType === "velocities"
+        ? groupDataByMonthForSpeed(filteredData, period)
+        : chartType === "shoes"
+          ? groupDataByShoes(filteredData)
+          : chartType === "weekly"
+            ? groupDataByWeek(filteredData, period)
+            : groupDataByLocation(filteredData);
 
   const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+    },
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+    },
+  };
+
+  const shoesOptions = {
+    indexAxis: "y",
     responsive: true,
     plugins: {
       legend: {
@@ -283,8 +442,37 @@ const Charts = () => {
         >
           <option value="kms">{t("kms")}</option>
           <option value="velocities">{t("velocities")}</option>
+          <option value="shoes">{t("shoes_chart_type")}</option>
+          <option value="weekly">{t("weekly_km_chart_type")}</option>
+          <option value="location">{t("location_chart_type")}</option>
         </select>
       </div>
+
+      {chartType === "shoes" && (
+        <div className="mb-4">
+          <label
+            htmlFor="topShoes"
+            className="block text-sm font-semibold text-gray-700"
+          >
+            {t("top_shoes")}
+          </label>
+          <select
+            id="topShoes"
+            value={topShoes}
+            onChange={(e) =>
+              setTopShoes(
+                e.target.value === "all" ? "all" : Number(e.target.value),
+              )
+            }
+            className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value="all">{t("all_shoes_top")}</option>
+          </select>
+        </div>
+      )}
 
       <div className="mb-4">
         <label
@@ -312,8 +500,18 @@ const Charts = () => {
       >
         {chartType === "kms" ? (
           <Bar data={dataForChart} options={options} />
-        ) : (
+        ) : chartType === "velocities" ? (
           <Line data={dataForChart} options={options} />
+        ) : chartType === "shoes" ? (
+          <Bar data={dataForChart} options={shoesOptions} />
+        ) : chartType === "weekly" ? (
+          <Line data={dataForChart} options={options} />
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <div className="w-full max-w-sm">
+              <Doughnut data={dataForChart} options={doughnutOptions} />
+            </div>
+          </div>
         )}
       </div>
     </div>
