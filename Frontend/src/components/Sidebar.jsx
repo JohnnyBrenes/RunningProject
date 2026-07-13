@@ -4,6 +4,7 @@ const Sidebar = ({ onSelectOption, selectedOption }) => {
   const { t } = useAppTranslation();
 
   const items = [
+    { key: "dashboard", label: t("dashboard") },
     { key: "charts", label: t("charts") },
     { key: "form", label: t("form") },
     { key: "verData", label: t("verData") },

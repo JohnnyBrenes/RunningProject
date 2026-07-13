@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import InsertData from "./components/InsertData";
 import Charts from "./components/Charts";
 import ViewData from "./components/ViewData";
+import Dashboard from "./components/Dashboard";
 import "./i18n"; // Importar configuración de i18n
 import useAppTranslation from "./utils/useAppTranslation";
 import LanguageSelector from "./components/LanguageSelector";
@@ -13,7 +14,7 @@ import Api from "./utils/Api";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("charts");
+  const [selectedOption, setSelectedOption] = useState("dashboard");
 
   const { t } = useAppTranslation();
 
@@ -103,6 +104,7 @@ const App = () => {
               onChange={(e) => setSelectedOption(e.target.value)}
               className="flex-1 p-2 rounded-lg bg-gray-700 text-white border border-gray-600 text-sm"
             >
+              <option value="dashboard">{t("dashboard")}</option>
               <option value="charts">{t("charts")}</option>
               <option value="form">{t("form")}</option>
               <option value="verData">{t("verData")}</option>
@@ -111,6 +113,7 @@ const App = () => {
           </div>
         </div>
         <div className="p-4 md:p-8">
+          {selectedOption === "dashboard" && <Dashboard />}
           {selectedOption === "charts" && <Charts />}
           {selectedOption === "form" && <InsertData />}
           {selectedOption === "verData" && <ViewData />}

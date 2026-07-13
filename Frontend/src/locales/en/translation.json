@@ -75,6 +75,13 @@
   "location_km_chart": "Kilometers by Location",
   "weekly_km_chart_type": "Kilometers per Week",
   "kms_per_week": "Km per week",
+  "dashboard": "Summary",
+  "kms_this_year": "Km this year",
+  "kms_this_month": "Km this month",
+  "sessions_this_month_sub": "sessions",
+  "best_week": "Best week",
+  "total_kms": "Total km",
+  "total_sessions": "Total sessions",
   "register_button": "Register",
   "success_message": "Operation completed successfully.",
   "error_message": "An error occurred. Please try again."
