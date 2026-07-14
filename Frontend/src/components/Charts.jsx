@@ -564,17 +564,17 @@ const Charts = () => {
             <p className="text-gray-400 text-sm">{t("no_data")}</p>
           </div>
         ) : chartType === "kms" ? (
-          <Bar data={dataForChart} options={barOptions} />
+          <Bar key={chartType} data={dataForChart} options={barOptions} />
         ) : chartType === "velocities" ? (
-          <Line data={dataForChart} options={lineOptions} />
+          <Line key={chartType} data={dataForChart} options={lineOptions} />
         ) : chartType === "shoes" ? (
-          <Bar data={dataForChart} options={shoesOptions} />
+          <Bar key={chartType} data={dataForChart} options={shoesOptions} />
         ) : chartType === "weekly" ? (
-          <Line data={dataForChart} options={lineOptions} />
+          <Line key={chartType} data={dataForChart} options={lineOptions} />
         ) : (
           <div className="flex justify-center items-center h-full">
             <div className="w-full max-w-sm">
-              <Doughnut data={dataForChart} options={doughnutOptions} />
+              <Doughnut key={chartType} data={dataForChart} options={doughnutOptions} />
             </div>
           </div>
         )}
