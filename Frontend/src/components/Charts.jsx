@@ -100,66 +100,61 @@ const Charts = () => {
     return minutes + seconds / 60;
   };
 
+  // Construye los buckets mes+año (clave única) para el periodo seleccionado
+  const getMonthBuckets = (period) => {
+    const now = new Date();
+    const counts = { mes: 1, trimestre: 3, semestre: 6, año: 12 };
+    const count = counts[period] || 1;
+
+    const buckets = [];
+    for (let i = 0; i < count; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      buckets.push({
+        key: `${d.getFullYear()}-${d.getMonth()}`,
+        label: d.toLocaleString(i18n.language, {
+          month: "long",
+          year: "numeric",
+        }),
+      });
+    }
+    return buckets;
+  };
+
   // Agrupar los datos por mes para kilómetros
   const groupDataByMonthForKms = (data, period) => {
-    const now = new Date();
-    let months = [];
-
-    if (period === "mes") {
-      months = [now.toLocaleString(i18n.language, { month: "long" })];
-    } else if (period === "trimestre") {
-      for (let i = 0; i < 3; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    } else if (period === "semestre") {
-      for (let i = 0; i < 6; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    } else if (period === "año") {
-      for (let i = 0; i < 12; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    }
+    const buckets = getMonthBuckets(period);
+    const currentMonthKey = buckets[0].key; // buckets[0] siempre es el mes actual
 
     const groupedData = data.reduce((acc, item) => {
-      const month = new Date(item.date).toLocaleString(i18n.language, {
-        month: "long",
-      });
-      if (!acc[month]) {
-        acc[month] = 0;
+      const d = new Date(item.date);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!acc[key]) {
+        acc[key] = 0;
       }
-      acc[month] += item.kilometers;
-      return acc;
-    }, {});
-
-    const dataWithAllMonths = months.reduce((acc, month) => {
-      acc[month] = groupedData[month] || 0;
+      acc[key] += item.kilometers;
       return acc;
     }, {});
 
     return {
-      labels: Object.keys(dataWithAllMonths).reverse(),
+      labels: buckets.map((b) => b.label).reverse(),
       datasets: [
         {
           label: t("kms"),
-          data: Object.values(dataWithAllMonths).reverse(),
-          backgroundColor: "rgba(75, 192, 192, 0.85)",
-          borderColor: "rgba(75, 192, 192, 1)",
+          data: buckets.map((b) => groupedData[b.key] || 0).reverse(),
+          backgroundColor: buckets
+            .map((b) =>
+              b.key === currentMonthKey
+                ? "rgba(37, 99, 235, 0.9)"
+                : "rgba(37, 99, 235, 0.35)",
+            )
+            .reverse(),
+          borderColor: buckets
+            .map((b) =>
+              b.key === currentMonthKey
+                ? "rgba(37, 99, 235, 1)"
+                : "rgba(37, 99, 235, 0.6)",
+            )
+            .reverse(),
           borderWidth: 1,
         },
       ],
@@ -168,64 +163,30 @@ const Charts = () => {
 
   // Agrupar los datos por mes para velocidades
   const groupDataByMonthForSpeed = (data, period) => {
-    const now = new Date();
-    let months = [];
-
-    if (period === "mes") {
-      months = [now.toLocaleString(i18n.language, { month: "long" })];
-    } else if (period === "trimestre") {
-      for (let i = 0; i < 3; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    } else if (period === "semestre") {
-      for (let i = 0; i < 6; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    } else if (period === "año") {
-      for (let i = 0; i < 12; i++) {
-        months.push(
-          new Date(now.getFullYear(), now.getMonth() - i).toLocaleString(
-            i18n.language,
-            { month: "long" },
-          ),
-        );
-      }
-    }
+    const buckets = getMonthBuckets(period);
 
     const groupedData = data.reduce((acc, item) => {
-      const month = new Date(item.date).toLocaleString(i18n.language, {
-        month: "long",
-      });
-      if (!acc[month]) {
-        acc[month] = { totalPace: 0, count: 0 };
+      const d = new Date(item.date);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!acc[key]) {
+        acc[key] = { totalPace: 0, count: 0 };
       }
-      acc[month].totalPace += convertPaceToMinutes(item.pace || "0:00"); // Convertir pace a minutos
-      acc[month].count += 1;
-      return acc;
-    }, {});
-
-    const dataWithAllMonths = months.reduce((acc, month) => {
-      const monthData = groupedData[month];
-      acc[month] = monthData ? monthData.totalPace / monthData.count : 0; // Promedio de pace
+      acc[key].totalPace += convertPaceToMinutes(item.pace || "0:00"); // Convertir pace a minutos
+      acc[key].count += 1;
       return acc;
     }, {});
 
     return {
-      labels: Object.keys(dataWithAllMonths).reverse(),
+      labels: buckets.map((b) => b.label).reverse(),
       datasets: [
         {
           label: t("average_pace_chart"),
-          data: Object.values(dataWithAllMonths).reverse(),
+          data: buckets
+            .map((b) => {
+              const bucketData = groupedData[b.key];
+              return bucketData ? bucketData.totalPace / bucketData.count : 0; // Promedio de pace
+            })
+            .reverse(),
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           borderColor: "rgba(255, 99, 132, 1)",
           borderWidth: 1,
@@ -322,8 +283,8 @@ const Charts = () => {
           data: weeks.map(
             (w) => grouped[w.toISOString().split("T")[0]] || 0,
           ),
-          backgroundColor: "rgba(75, 192, 192, 0.85)",
-          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(37, 99, 235, 0.85)",
+          borderColor: "rgba(37, 99, 235, 1)",
           borderWidth: 2,
           fill: true,
           tension: 0.3,
