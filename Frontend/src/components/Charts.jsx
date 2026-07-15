@@ -111,10 +111,7 @@ const Charts = () => {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       buckets.push({
         key: `${d.getFullYear()}-${d.getMonth()}`,
-        label: d.toLocaleString(i18n.language, {
-          month: "long",
-          year: "numeric",
-        }),
+        label: `${d.toLocaleString(i18n.language, { month: "long" })} ${d.getFullYear()}`,
       });
     }
     return buckets;
