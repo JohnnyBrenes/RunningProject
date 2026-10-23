@@ -1,7 +1,9 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
@@ -98,16 +100,58 @@ builder.Services.AddSingleton<SupabaseClientService>();
 builder.Services.AddSingleton<TrainningService>();
 builder.Services.AddScoped<UserService>();
 
-// Configurar CORS
+// Configurar CORS: solo los orígenes de Cors__AllowedOrigins (separados por comas).
+// En desarrollo, si no está configurada, se permite el frontend de Vite en localhost.
+var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    .Select(origin => origin.TrimEnd('/'))
+    .ToArray();
+if (allowedOrigins.Length == 0)
+{
+    if (!builder.Environment.IsDevelopment())
+    {
+        throw new InvalidOperationException(
+            "Falta la variable de entorno requerida: Cors__AllowedOrigins"
+        );
+    }
+    allowedOrigins = ["http://localhost:5173"];
+}
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAllOrigins",
-        builder =>
+        "Frontend",
+        policy =>
         {
-            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            policy.WithOrigins(allowedOrigins).AllowAnyMethod().AllowAnyHeader();
         }
     );
+});
+
+// Limitar intentos de login/registro por IP para frenar ataques de fuerza bruta
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(
+        "auth",
+        context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(1),
+                }
+            )
+    );
+});
+
+// Koyeb termina TLS en su proxy y envía la IP real del cliente en X-Forwarded-For.
+// Sus IPs no son fijas, así que se confía en el último salto (ForwardLimit = 1 por defecto).
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // Configurar logging
@@ -129,14 +173,16 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-// Habilitar OpenAPI/Scalar en todos los entornos
-app.MapOpenApi();
-app.MapScalarApiReference();
+app.UseForwardedHeaders();
 
 // Configurar el pipeline de middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+
+    // OpenAPI/Scalar solo en desarrollo para no publicar el mapa de la API
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 // Endpoint de health check para Koyeb
@@ -145,7 +191,8 @@ app.MapGet("/health", () => Results.Ok("Healthy"));
 // Middleware adicional
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowAllOrigins");
+app.UseCors("Frontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

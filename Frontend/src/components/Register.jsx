@@ -23,7 +23,7 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       setErrorMessage(t("password_min_length"));
       return;
     }
@@ -40,6 +40,8 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
     } catch (error) {
       if (error.response?.status === 409) {
         setErrorMessage(t("user_or_email_taken"));
+      } else if (error.response?.status === 429) {
+        setErrorMessage(t("too_many_attempts"));
       } else if (error.response?.status === 400 && error.response.data?.errors) {
         setErrorMessage(Object.values(error.response.data.errors).flat().join(" "));
       } else {

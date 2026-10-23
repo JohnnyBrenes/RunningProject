@@ -3,8 +3,9 @@
 ## Estado
 
 - **Revisión: hecha** (2026-10-23). Revisión estática del código de `Backend/RunningWebApi` (controllers, services, modelos, `Program.cs`, configuración, `Dockerfile`) y del historial de git en busca de secretos filtrados.
-- **Fase 1: implementada en código y probada en local** (2026-10-23), **pendiente de deploy**. Ver "Estado de la Fase 1" más abajo. **Antes del deploy hay que configurar `Jwt__Key` en Koyeb** (C3).
-- Fases 2 y 3: no implementadas.
+- **Fase 1: desplegada en producción** (2026-10-23). `Jwt__Key` configurada en Koyeb como secret; verificado desde fuera que el token falso da 401 y que los endpoints eliminados dan 404/405.
+- **Fase 2: implementada y probada en local** (2026-10-23), **pendiente de deploy**. Ver "Estado de la Fase 2". **Antes del deploy hay que añadir `Cors__AllowedOrigins` en Koyeb.**
+- Fase 3: no implementada.
 - Contexto importante: **el repositorio es público** en GitHub y **el registro es abierto** (`POST /api/auth/register`), así que cualquier persona en internet puede obtener un token válido.
 
 ## Resumen
@@ -157,6 +158,25 @@ Como `appsettings.json` ya no trae clave, **si se despliega el código sin `Jwt_
 3. Comprobar que la app de Vercel sigue funcionando (login y ver datos).
 4. Hacer push del código de la Fase 1 y volver a probar la app.
 5. Opcional: revisar los logs de Koyeb en busca de accesos con usernames desconocidos. No hay forma de saber si alguien usó la clave pública antes.
+
+## Estado de la Fase 2
+
+| Paso | Estado |
+|---|---|
+| 7. Rate limiting | ✅ `AuthController` (login y registro): 5 peticiones por minuto por IP, 429 al superarlo. `UseForwardedHeaders` toma la IP real de `X-Forwarded-For` (último salto). El frontend muestra "Demasiados intentos" con un 429 |
+| 8. CORS | ✅ Política `Frontend` con los orígenes de `Cors__AllowedOrigins` (separados por comas; se quita la `/` final). En Development, por defecto `http://localhost:5173`. Fuera de Development, sin la variable la app **no arranca** |
+| 9. Scalar/OpenAPI | ✅ Solo en Development |
+| 10. Validación | ✅ `LoginRequest` (longitud máxima), `RegisterRequest` (username `^[A-Za-z0-9_.-]{3,50}$`, contraseña de 8 a 128 caracteres; el frontend también exige 8) y `TrainningDto` (km entre 0.01 y 500, tiempo `M:SS`, fecha entre el año 2000 y hoy, longitud máxima de los textos) |
+
+Pruebas en local contra Supabase: 17 de 17 correctas (CORS por origen, validaciones, entrenamiento válido con el formato del frontend, rate limit por IP, el 429 lleva cabecera CORS). Los datos de prueba se borraron.
+
+**No verificable en local:** que Koyeb envíe en `X-Forwarded-For` la IP real del cliente como último salto. Si no fuera así, todos los clientes compartirían el límite de 5 por minuto. Se comprueba tras el deploy.
+
+### Orden del deploy
+
+1. Koyeb → servicio → Settings → Environment variables → añadir `Cors__AllowedOrigins` (Plaintext) = `https://running-project.vercel.app,http://localhost:5173` → Save and deploy. Con el código actual no cambia nada (todavía no lee la variable).
+2. Push del código de la Fase 2.
+3. Si el deploy queda Unhealthy con "Falta la variable de entorno requerida: Cors__AllowedOrigins", el paso 1 no se aplicó. Koyeb mantiene el deployment anterior.
 
 ---
 

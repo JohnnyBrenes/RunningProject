@@ -34,6 +34,8 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
     } catch (error) {
       if (error.response?.status === 401) {
         setErrorMessage(t("invalid_credentials"));
+      } else if (error.response?.status === 429) {
+        setErrorMessage(t("too_many_attempts"));
       } else {
         setErrorMessage(t("server_starting"));
       }

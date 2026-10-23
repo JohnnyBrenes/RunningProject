@@ -12,6 +12,7 @@
   "processing": "Procesando...",
   "invalid_credentials": "Credenciales inválidas. Intente nuevamente.",
   "server_starting": "El servidor está iniciando. Intente nuevamente en unos segundos.",
+  "too_many_attempts": "Demasiados intentos. Espere un minuto e intente nuevamente.",
   "sidebar_options": "Opciones",
   "register_account": "Crear Cuenta",
   "email": "Correo Electrónico",
@@ -90,5 +91,5 @@
   "no_account": "¿No tienes una cuenta?",
   "has_account": "¿Ya tienes una cuenta?",
   "user_or_email_taken": "El usuario o correo ya está en uso.",
-  "password_min_length": "La contraseña debe tener al menos 6 caracteres."
+  "password_min_length": "La contraseña debe tener al menos 8 caracteres."
 }

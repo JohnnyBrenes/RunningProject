@@ -12,6 +12,7 @@
   "processing": "Processing...",
   "invalid_credentials": "Invalid credentials. Please try again.",
   "server_starting": "The server is starting up. Please try again in a few seconds.",
+  "too_many_attempts": "Too many attempts. Please wait a minute and try again.",
   "sidebar_options": "Options",
   "register_account": "Create Account",
   "email": "Email",
@@ -90,5 +91,5 @@
   "no_account": "Don't have an account?",
   "has_account": "Already have an account?",
   "user_or_email_taken": "Username or email is already taken.",
-  "password_min_length": "Password must be at least 6 characters."
+  "password_min_length": "Password must be at least 8 characters."
 }
