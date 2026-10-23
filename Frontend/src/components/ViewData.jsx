@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import * as XLSX from "xlsx";
 import Api from "../utils/Api";
 import useAppTranslation from "../utils/useAppTranslation";
 import ConfirmModal from "./ConfirmModal";
@@ -165,7 +164,8 @@ const ViewData = () => {
     )} min/km`;
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
     const rows = filteredData.map((item) => ({
       [t("date_col")]: formatDate(item.date),
       [t("kilometers_col")]: item.kilometers,
