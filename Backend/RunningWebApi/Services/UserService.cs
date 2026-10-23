@@ -21,48 +21,6 @@ public class UserService
         _logger = logger;
     }
 
-    public async Task<List<UsersDto>> GetAllAsync()
-    {
-        _logger.LogInformation("Fetching all users from Supabase...");
-        var result = await _client.From<Users>().Get();
-
-        if (result.Models.Count == 0)
-        {
-            _logger.LogWarning("No users found in Supabase.");
-        }
-
-        return result
-            .Models.Select(u => new UsersDto
-            {
-                Id = u.Id,
-                Username = u.Username,
-                Email = u.Email,
-                PasswordHash = u.PasswordHash,
-            })
-            .ToList();
-    }
-
-    public async Task<UsersDto?> GetByIdAsync(Guid id)
-    {
-        _logger.LogInformation("Fetching user with Id: {Id} from Supabase...", id);
-        var result = await _client
-            .From<Users>()
-            .Filter("id", Operator.Equals, id.ToString())
-            .Single();
-        if (result == null)
-        {
-            _logger.LogWarning("User with Id: {Id} not found in Supabase.", id);
-            return null;
-        }
-        return new UsersDto
-        {
-            Id = result.Id,
-            Username = result.Username,
-            Email = result.Email,
-            PasswordHash = result.PasswordHash,
-        };
-    }
-
     public async Task<UsersDto?> GetByUsernameAsync(string username)
     {
         _logger.LogInformation(
@@ -144,24 +102,5 @@ public class UserService
             _logger.LogError("Unexpected error creating user in Supabase: {Message}", ex.Message);
             throw;
         }
-    }
-
-    public async Task<bool> DeleteAsync(Guid id)
-    {
-        _logger.LogInformation("Deleting user with Id: {Id} from Supabase...", id);
-
-        var idString = id.ToString();
-
-        var response = await _client.From<Users>().Filter("id", Operator.Equals, idString).Get();
-
-        var user = response.Models.FirstOrDefault();
-        if (user == null)
-        {
-            _logger.LogWarning("User with Id: {Id} not found in Supabase.", id);
-            return false;
-        }
-        await _client.From<Users>().Filter("id", Operator.Equals, idString).Delete();
-
-        return true;
     }
 }

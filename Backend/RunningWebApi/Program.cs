@@ -9,13 +9,14 @@ using Microsoft.OpenApi;
 using RunningWebApi.Services;
 using Scalar.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Cargar variables de entorno desde el archivo .env (solo en desarrollo local)
+// Cargar variables de entorno desde el archivo .env (solo en desarrollo local).
+// Debe ir antes de CreateBuilder para que la configuración (p. ej. Jwt__Key) las vea.
 if (File.Exists(".env"))
 {
     Env.Load();
 }
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Validar variables de entorno críticas al arrancar
 var requiredVars = new[] { "SUPABASE_URL", "SUPABASE_SERVICE_KEY" };

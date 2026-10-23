@@ -21,48 +21,6 @@ public class TrainningService
         _logger = logger;
     }
 
-    public async Task<List<TrainningResponseDto>> GetAsync()
-    {
-        _logger.LogInformation("Fetching trainnings from Supabase...");
-        var result = await _client.From<Trainnings>().Get();
-        _logger.LogInformation("Fetched {Count} trainnings from Supabase.", result.Models.Count);
-
-        if (result.Models.Count == 0)
-        {
-            _logger.LogWarning("No trainnings found in Supabase.");
-        }
-        else
-        {
-            foreach (var trainning in result.Models)
-            {
-                _logger.LogInformation(
-                    "Trainning: {Id}, {Date}, {Kilometers}, {Time}, {Pace}, {Shoes}, {UserId}",
-                    trainning.Id,
-                    trainning.Date,
-                    trainning.Kilometers,
-                    trainning.Time,
-                    trainning.Pace,
-                    trainning.Shoes,
-                    trainning.UserId
-                );
-            }
-        }
-
-        return result
-            .Models.Select(t => new TrainningResponseDto
-            {
-                Id = t.Id,
-                Date = t.Date,
-                Kilometers = t.Kilometers,
-                Time = t.Time,
-                Pace = t.Pace,
-                Shoes = t.Shoes,
-                Location = t.Location,
-                UserId = t.UserId,
-            })
-            .ToList();
-    }
-
     public async Task<TrainningResponseDto?> GetByIdAsync(Guid id)
     {
         _logger.LogInformation("Fetching trainning with Id: {Id} from Supabase...", id);
@@ -170,7 +128,7 @@ public class TrainningService
             .ToList();
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id, string userId)
     {
         _logger.LogInformation("Deleting training with Id: {Id} from Supabase...", id);
 
@@ -183,7 +141,7 @@ public class TrainningService
 
         var trainning = response.Models.FirstOrDefault();
 
-        if (trainning == null)
+        if (trainning == null || trainning.UserId != userId)
         {
             _logger.LogWarning("Training with Id: {Id} not found in Supabase.", id);
             return false;
@@ -195,7 +153,7 @@ public class TrainningService
         return true;
     }
 
-    public async Task<TrainningResponseDto> CreateAsync(TrainningDto trainning)
+    public async Task<TrainningResponseDto> CreateAsync(TrainningDto trainning, string userId)
     {
         _logger.LogInformation("Creating a new trainning in Supabase...");
         try
@@ -209,7 +167,7 @@ public class TrainningService
                 Pace = trainning.Pace,
                 Shoes = trainning.Shoes,
                 Location = trainning.Location,
-                UserId = trainning.UserId,
+                UserId = userId,
             };
 
             var result = await _client.From<Trainnings>().Insert(data);

@@ -43,6 +43,7 @@ public class AuthService
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("username", user.Username),
                 }
             ),
             Expires = DateTime.UtcNow.AddHours(1),
